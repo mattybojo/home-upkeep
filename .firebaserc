@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "home-upkeep": {
+      "hosting": {
+        "home-upkeep": [
+          "home-upkeep"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "home-upkeep"
+  }
+}
