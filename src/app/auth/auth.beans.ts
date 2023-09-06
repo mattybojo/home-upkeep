@@ -6,4 +6,5 @@ export interface HomneUpkeepUser {
   photoURL: string;
   dateCreated: number;
   dateLastModified: number;
+  uid: string;
 }

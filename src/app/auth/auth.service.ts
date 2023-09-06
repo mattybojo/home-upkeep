@@ -29,10 +29,6 @@ export class AuthService {
     this.afAuth.authState.subscribe((user: User | null) => {
       this._user = user;
       this.isLoggedIn$.next(!!user);
-
-      if (!!user && user?.metadata.creationTime === user?.metadata.lastSignInTime) {
-        this.saveUser(user!);
-      }
     });
   }
 
@@ -49,6 +45,11 @@ export class AuthService {
     return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>;
   }
 
+  saveUser(user: User): Observable<DocumentReference<DocumentData | null>> {
+    const userRef = collection(this.db, 'users');
+    return from(addDoc(userRef, this.convertToFirestoreUser(user)));
+  }
+
   private convertToFirestoreUser(user: User): HomneUpkeepUser {
     return {
       displayName: user.displayName!,
@@ -57,12 +58,8 @@ export class AuthService {
       dateCreated: new Date(user.metadata.creationTime!).getTime(),
       dateLastModified: new Date(user.metadata.lastSignInTime!).getTime(),
       phoneNumber: user.phoneNumber!,
-      photoURL: user.photoURL!
+      photoURL: user.photoURL!,
+      uid: user.uid
     };
-  }
-
-  private saveUser(user: User): Observable<DocumentReference<DocumentData | null>> {
-    const giftCardsRef = collection(this.db, 'users');
-    return from(addDoc(giftCardsRef, this.convertToFirestoreUser(this.user!)));
   }
 }
