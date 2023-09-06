@@ -27,8 +27,6 @@ export class AuthService {
     private db: Firestore) {
 
     this.afAuth.authState.subscribe((user: User | null) => {
-      console.log(user);
-
       this._user = user;
       this.isLoggedIn$.next(!!user);
 
