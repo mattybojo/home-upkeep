@@ -15,14 +15,12 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { firebaseUiConfig } from './app.config';
-import { DashboardComponent } from './dashboard/dashboard.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = firebaseUiConfig;
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent
   ],
   imports: [
     BrowserModule,

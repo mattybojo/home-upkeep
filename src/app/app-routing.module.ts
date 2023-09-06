@@ -1,14 +1,13 @@
 import { NgModule } from '@angular/core';
+import { canActivate, redirectLoggedInTo, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { redirectUnauthorizedTo, redirectLoggedInTo, canActivate } from '@angular/fire/auth-guard';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/auth/login']);
 const redirectLoggedInToDashboard = () => redirectLoggedInTo(['/']);
 
 const routes: Routes = [{
   path: '',
-  component: DashboardComponent,
+  loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule),
   ...canActivate(redirectUnauthorizedToLogin)
 }, {
   path: 'auth',
