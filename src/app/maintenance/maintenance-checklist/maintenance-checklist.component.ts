@@ -70,7 +70,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           this.frontYardItems = sortBy(this.frontYardItems, sortFunction);
           this.backyardItems = sortBy(this.backyardItems, sortFunction);
           this.bedroomItems = sortBy(this.bedroomItems, sortFunction);
-          this.personalItems = sortBy(this.generalItems, sortFunction);
+          this.personalItems = sortBy(this.personalItems, sortFunction);
 
           const formControls = this.prepareFormControls(resp);
           if (!!formControls) {
