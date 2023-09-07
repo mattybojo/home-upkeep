@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { add } from 'date-fns';
 import { sortBy } from 'lodash';
@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { SubSink } from 'subsink';
 import { MaintenanceItem, ReactiveFormControls } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
+import { ValidateCompletedDate } from '../shared/date.validator';
 
 @Component({
   selector: 'app-maintenance-checklist',
@@ -27,11 +28,12 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   personalItems: MaintenanceItem[] = [];
 
   isExpanded: boolean = true;
+  initialFormValues: any = [];
 
   private subs = new SubSink();
 
   constructor(private fb: FormBuilder, private maintenanceService: MaintenanceService,
-    private messageService: MessageService) { }
+    private messageService: MessageService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -75,6 +77,11 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           const formControls = this.prepareFormControls(resp);
           if (!!formControls) {
             this.mainForm = new FormGroup(formControls)
+            this.subs.sink = this.mainForm.valueChanges.subscribe({
+              next: (resp) => this.cdr.detectChanges(),
+              error: (err) => console.error('Error detecting form changes')
+            });
+            this.initialFormValues = this.mainForm.value;
           }
         }
       },
@@ -90,6 +97,10 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     if (!!theControl.value) {
       theControl.setValue(add(theControl.value, duration));
     }
+  }
+
+  resetForm(): void {
+    this.mainForm?.reset(this.initialFormValues);
   }
 
   saveForm(): void {
@@ -112,7 +123,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     items.forEach((item: MaintenanceItem) => {
       lastDate = !!item.lastCompletedDate ? new Date(item.lastCompletedDate) : undefined;
       dueDate = !!item.dueDate ? new Date(item.dueDate) : undefined;
-      formControls[`${item.control}Date`] = new FormControl(lastDate, null);
+      formControls[`${item.control}Date`] = new FormControl(lastDate, [ValidateCompletedDate]);
       formControls[`${item.control}DueDate`] = new FormControl(dueDate, null);
     });
     return formControls;

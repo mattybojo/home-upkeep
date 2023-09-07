@@ -3,6 +3,12 @@
     label="Save"
     styleClass="p-button-raised mb-2"
     type="submit"
+    [disabled]="mainForm.invalid"
+  ></p-button>
+  <p-button
+    label="Reset"
+    styleClass="p-button-raised mb-2 ml-1"
+    (onClick)="resetForm()"
   ></p-button>
   <p-accordion [multiple]="true">
     <p-accordionTab header="General Housekeeping" [selected]="isExpanded">
@@ -61,7 +67,11 @@
 
       <div class="grid">
         <ng-container *ngFor="let item of items">
-          <div class="flex w-full">
+          <div
+            checklistRowStatus
+            [doneDate]="mainForm.get(item.control + 'Date')?.value"
+            [dueDate]="mainForm.get(item.control + 'DueDate')?.value"
+          >
             <div class="col-6">
               <span class="vertical-align-sub">{{ item.label }}</span>
             </div>
