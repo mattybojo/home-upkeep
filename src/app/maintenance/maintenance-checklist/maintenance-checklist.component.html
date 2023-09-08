@@ -1,15 +1,23 @@
 <form [formGroup]="mainForm" (ngSubmit)="saveForm()" *ngIf="mainForm">
-  <p-button
-    label="Save"
-    styleClass="p-button-raised mb-2"
-    type="submit"
-    [disabled]="mainForm.invalid"
-  ></p-button>
-  <p-button
-    label="Reset"
-    styleClass="p-button-raised mb-2 ml-1"
-    (onClick)="resetForm()"
-  ></p-button>
+  <div class="flex justify-content-end">
+    <p-button
+      label="Save"
+      styleClass="p-button-raised mb-2 mr-1"
+      type="submit"
+      [disabled]="mainForm.invalid"
+    ></p-button>
+    <p-button
+      label="Reset"
+      styleClass="p-button-raised p-button-help mb-2 mr-1"
+      (onClick)="resetForm()"
+    ></p-button>
+    <div>
+      <p class="p-input-icon-right">
+        <i class="fa-solid fa-filter fa-fw"></i>
+        <input type="text" pInputText (keyup)="filterMaintItems($event)" />
+      </p>
+    </div>
+  </div>
   <p-accordion [multiple]="true">
     <p-accordionTab
       [header]="category.label"

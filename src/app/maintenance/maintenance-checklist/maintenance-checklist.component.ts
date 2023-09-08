@@ -22,6 +22,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   categories: Category[] = [];
 
   isExpanded: boolean = true;
+
   initialFormValues: any = [];
 
   private subs = new SubSink();
@@ -132,6 +133,12 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       (items[foundIndex] as any)[objProp as keyof MaintenanceItem] = newValue;
     }
     return items;
+  }
+
+  filterMaintItems(event: KeyboardEvent): void {
+    this.categories.forEach((category: Category) => {
+      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes((event.target as any).value.toLowerCase()));
+    });
   }
 
   ngOnDestroy(): void {
