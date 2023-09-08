@@ -1,6 +1,11 @@
 <div class="card">
   <p-menubar class="header-menu" [model]="menuItems!">
     <ng-template pTemplate="start">
+      <p-button
+        styleClass="p-button-secondary mr-2"
+        icon="fa-solid fa-bars fa-fw"
+        (onClick)="isSidebarVisible = !isSidebarVisible"
+      ></p-button>
       <a class="no-underline font-bold" routerLink="/">
         <span>Home Upkeep</span>
       </a>
@@ -31,6 +36,10 @@
 <div class="router-outlet-container">
   <router-outlet></router-outlet>
 </div>
+
+<p-sidebar [(visible)]="isSidebarVisible" position="left">
+  <app-sidebar (onCloseSidebar)="closeSidebar()"></app-sidebar>
+</p-sidebar>
 
 <ng-template let-item #dropdownItem>
   <div

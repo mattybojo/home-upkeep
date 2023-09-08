@@ -1,6 +1,13 @@
-.header-menu ::ng-deep .p-menuitem-link-active span.p-menuitem-text {
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
+.header-menu ::ng-deep  {
+  .p-menuitem-link-active span.p-menuitem-text {
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+  }
+
+  .p-menubar-start {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .auth-dropdown ::ng-deep {

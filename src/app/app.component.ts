@@ -12,6 +12,7 @@ export class AppComponent {
 
   menuItems: MenuItem[] | undefined;
   authOptions: AuthDropdownOption[] | undefined;
+  isSidebarVisible: boolean = false;
 
   loggedInAuthOptions: AuthDropdownOption[] = [{
     label: 'Profile',
@@ -50,5 +51,9 @@ export class AppComponent {
     } else {
       this.authOptions = [...permanentAuthOptions, ...this.loggedOutAuthOptions];
     }
+  }
+
+  closeSidebar(): void {
+    this.isSidebarVisible = false;
   }
 }
