@@ -16,6 +16,7 @@ export interface Category {
   sortOrder: number;
   items?: MaintenanceItem[];
   filteredItems?: MaintenanceItem[];
+  isExpanded?: boolean;
 }
 
 export interface ReactiveFormControls {

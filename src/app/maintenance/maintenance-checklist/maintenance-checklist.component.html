@@ -21,7 +21,7 @@
   <p-accordion [multiple]="true">
     <p-accordionTab
       [header]="category.label"
-      [selected]="isExpanded"
+      [selected]="category.isExpanded"
       *ngFor="let category of categories"
     >
       <ng-container

@@ -21,8 +21,6 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   maintItems: MaintenanceItem[] = [];
   categories: Category[] = [];
 
-  isExpanded: boolean = true;
-
   initialFormValues: any = [];
 
   private subs = new SubSink();
@@ -48,6 +46,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       this.categories.forEach((category: Category) => {
         category.items = [];
         category.filteredItems = [];
+        category.isExpanded = true;
       });
 
       // Sort items into categories
@@ -138,6 +137,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   filterMaintItems(event: KeyboardEvent): void {
     this.categories.forEach((category: Category) => {
       category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes((event.target as any).value.toLowerCase()));
+      category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
     });
   }
 
