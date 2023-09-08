@@ -4,7 +4,7 @@ import { MaintenanceService } from '../../maintenance/maintenance.service';
 import { MaintenanceItem } from '../../maintenance/maintenance.beans';
 import { add, format, isAfter, isBefore, set } from 'date-fns';
 import { Message } from 'primeng/api/message';
-import * as _ from 'lodash';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-dashboard',
@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.nextWeekTasks.forEach((task: MaintenanceItem) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
         });
-        this.nextWeekTasks = _.sortBy(this.nextWeekTasks, ['dueDate', 'label']);
+        this.nextWeekTasks = sortBy(this.nextWeekTasks, ['dueDate', 'label']);
         this.maintMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There are currently ${this.nextWeekTasks.length} tasks with due dates this next week.` });
       },
       error: (err) => console.error(err)
