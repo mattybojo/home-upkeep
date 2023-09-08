@@ -11,44 +11,13 @@
     (onClick)="resetForm()"
   ></p-button>
   <p-accordion [multiple]="true">
-    <p-accordionTab header="General Housekeeping" [selected]="isExpanded">
+    <p-accordionTab
+      [header]="category.label"
+      [selected]="isExpanded"
+      *ngFor="let category of categories"
+    >
       <ng-container
-        *ngTemplateOutlet="tasks; context: { items: generalItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Pets" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: petItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Cars" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: carItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Kitchen" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: kitchenItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Front Yard" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: frontYardItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Backyard" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: backyardItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Bedroom" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: bedroomItems }"
-      ></ng-container>
-    </p-accordionTab>
-    <p-accordionTab header="Personal" [selected]="isExpanded">
-      <ng-container
-        *ngTemplateOutlet="tasks; context: { items: personalItems }"
+        *ngTemplateOutlet="tasks; context: { items: category.filteredItems }"
       ></ng-container>
     </p-accordionTab>
   </p-accordion>

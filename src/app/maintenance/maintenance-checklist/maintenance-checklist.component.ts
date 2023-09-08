@@ -1,12 +1,14 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { add } from 'date-fns';
 import { sortBy } from 'lodash';
 import { MessageService } from 'primeng/api';
+import { zip } from 'rxjs';
 import { SubSink } from 'subsink';
 import { MaintenanceItem, ReactiveFormControls } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
+import { Category } from './../maintenance.beans';
 
 @Component({
   selector: 'app-maintenance-checklist',
@@ -17,22 +19,14 @@ import { ValidateCompletedDate } from '../shared/date.validator';
 export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   mainForm: FormGroup | undefined = undefined;
   maintItems: MaintenanceItem[] = [];
-
-  generalItems: MaintenanceItem[] = [];
-  petItems: MaintenanceItem[] = [];
-  carItems: MaintenanceItem[] = [];
-  kitchenItems: MaintenanceItem[] = [];
-  frontYardItems: MaintenanceItem[] = [];
-  backyardItems: MaintenanceItem[] = [];
-  bedroomItems: MaintenanceItem[] = [];
-  personalItems: MaintenanceItem[] = [];
+  categories: Category[] = [];
 
   isExpanded: boolean = true;
   initialFormValues: any = [];
 
   private subs = new SubSink();
 
-  constructor(private fb: FormBuilder, private maintenanceService: MaintenanceService,
+  constructor(private maintenanceService: MaintenanceService,
     private messageService: MessageService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -40,55 +34,41 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.subs.sink = this.maintenanceService.getMaintenanceItems().subscribe({
-      next: (resp: MaintenanceItem[]) => {
-        this.maintItems = resp;
-        if (resp.length > 0) {
-          this.generalItems = [];
-          this.petItems = [];
-          this.carItems = [];
-          this.kitchenItems = [];
-          this.frontYardItems = [];
-          this.backyardItems = [];
-          this.bedroomItems = [];
-          this.personalItems = [];
-          resp.forEach((item: MaintenanceItem) => {
-            switch (item.category) {
-              case 'general': this.generalItems.push(item); break;
-              case 'pet': this.petItems.push(item); break;
-              case 'car': this.carItems.push(item); break;
-              case 'kitchen': this.kitchenItems.push(item); break;
-              case 'frontYard': this.frontYardItems.push(item); break;
-              case 'backyard': this.backyardItems.push(item); break;
-              case 'bedroom': this.bedroomItems.push(item); break;
-              case 'personal': this.personalItems.push(item); break;
-            }
-          });
-          const sortFunction = (item: MaintenanceItem) => item.sortOrder;
-          this.generalItems = sortBy(this.generalItems, sortFunction);
-          this.petItems = sortBy(this.petItems, sortFunction);
-          this.carItems = sortBy(this.carItems, sortFunction);
-          this.kitchenItems = sortBy(this.kitchenItems, sortFunction);
-          this.frontYardItems = sortBy(this.frontYardItems, sortFunction);
-          this.backyardItems = sortBy(this.backyardItems, sortFunction);
-          this.bedroomItems = sortBy(this.bedroomItems, sortFunction);
-          this.personalItems = sortBy(this.personalItems, sortFunction);
+    this.subs.sink = zip(
+      this.maintenanceService.getCategories(),
+      this.maintenanceService.getMaintenanceItems()
+    ).subscribe(([categories, maintItems]) => {
 
-          const formControls = this.prepareFormControls(resp);
-          if (!!formControls) {
-            this.mainForm = new FormGroup(formControls)
-            this.subs.sink = this.mainForm.valueChanges.subscribe({
-              next: (resp) => this.cdr.detectChanges(),
-              error: (err) => console.error('Error detecting form changes')
-            });
-            this.initialFormValues = this.mainForm.value;
-          }
-        }
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
+      // Sort by sortOrder property
+      this.categories = sortBy(categories, 'sortOrder');
+      this.maintItems = sortBy(maintItems, 'sortOrder');
+
+      // Initialize the arrays which will hold the maintenance items
+      this.categories.forEach((category: Category) => {
+        category.items = [];
+        category.filteredItems = [];
+      });
+
+      // Sort items into categories
+      let foundIndex: number;
+      this.maintItems.forEach((item: MaintenanceItem) => {
+        foundIndex = this.categories.findIndex((category: Category) => category.category === item.category);
+        this.categories[foundIndex].items?.push(item);
+        this.categories[foundIndex].filteredItems?.push(item);
+      });
+
+      const formControls = this.prepareFormControls(maintItems);
+      if (!!formControls) {
+        this.mainForm = new FormGroup(formControls)
+        this.subs.sink = this.mainForm.valueChanges.subscribe({
+          next: (resp) => this.cdr.detectChanges(),
+          error: (err) => console.error('Error detecting form changes')
+        });
+        this.initialFormValues = this.mainForm.value;
       }
+    }, (err) => {
+      console.error(err);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
     });
   }
 

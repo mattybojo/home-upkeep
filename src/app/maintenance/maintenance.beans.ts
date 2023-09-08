@@ -1,5 +1,5 @@
 export interface MaintenanceItem {
-  id?: string | undefined;
+  id?: string;
   category: string;
   label: string;
   control: string;
@@ -7,6 +7,15 @@ export interface MaintenanceItem {
   dueDate: number;
   sortOrder: number;
   dueDateString?: string;
+}
+
+export interface Category {
+  id?: string;
+  label: string;
+  category: string;
+  sortOrder: number;
+  items?: MaintenanceItem[];
+  filteredItems?: MaintenanceItem[];
 }
 
 export interface ReactiveFormControls {
