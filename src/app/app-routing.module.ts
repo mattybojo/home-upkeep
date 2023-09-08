@@ -7,6 +7,10 @@ const redirectLoggedInToDashboard = () => redirectLoggedInTo(['/']);
 
 const routes: Routes = [{
   path: '',
+  loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+  ...canActivate(redirectUnauthorizedToLogin)
+}, {
+  path: 'maintenance',
   loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule),
   ...canActivate(redirectUnauthorizedToLogin)
 }, {

@@ -6,6 +6,7 @@ export interface MaintenanceItem {
   lastCompletedDate: number;
   dueDate: number;
   sortOrder: number;
+  dueDateString?: string;
 }
 
 export interface ReactiveFormControls {

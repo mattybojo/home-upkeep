@@ -18,9 +18,14 @@ export class SidebarComponent implements OnInit {
     const closeSidebar = () => this.onCloseSidebar.emit();
 
     this.menuItems = [{
+      label: 'Dashboard',
+      icon: 'fa-solid fa-house fa-fw',
+      routerLink: '/',
+      command: closeSidebar
+    }, {
       label: 'Checklist',
       icon: 'fa-solid fa-clipboard-list fa-fw',
-      routerLink: '/',
+      routerLink: '/maintenance',
       command: closeSidebar
     }];
   }
