@@ -11,10 +11,36 @@
       styleClass="p-button-raised p-button-help mb-2 mr-1"
       (onClick)="resetForm()"
     ></p-button>
+    <p-dropdown
+      [options]="sortOptions"
+      optionLabel="label"
+      styleClass="mr-1"
+      [(ngModel)]="selectedSort"
+      [ngModelOptions]="{ standalone: true }"
+      (onChange)="onChangeSortOption($event)"
+    >
+      <ng-template pTemplate="selectedItem">
+        <div class="flex align-items-center gap-2">
+          <div>Sorted By: {{ selectedSort.label }}</div>
+        </div>
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        <div class="flex align-items-center gap-2">
+          <i [class]="item.icon"></i>
+          <div>{{ item.label }}</div>
+        </div>
+      </ng-template></p-dropdown
+    >
     <div>
       <p class="p-input-icon-right">
         <i class="fa-solid fa-filter fa-fw"></i>
-        <input type="text" pInputText (keyup)="filterMaintItems($event)" />
+        <input
+          type="text"
+          pInputText
+          (keyup)="filterMaintItems()"
+          [(ngModel)]="filterValue"
+          [ngModelOptions]="{ standalone: true }"
+        />
       </p>
     </div>
   </div>
@@ -22,7 +48,7 @@
     <p-accordionTab
       [header]="category.label"
       [selected]="category.isExpanded"
-      *ngFor="let category of categories"
+      *ngFor="let category of selectedCategories"
     >
       <ng-container
         *ngTemplateOutlet="tasks; context: { items: category.filteredItems }"

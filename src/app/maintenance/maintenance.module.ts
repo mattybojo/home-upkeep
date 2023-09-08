@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenance-checklist.component';
@@ -17,11 +18,13 @@ import { ChecklistRowStatusDirective } from './shared/checklist-row-status.direc
   imports: [
     CommonModule,
     MaintenanceRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
     AccordionModule,
     CalendarModule,
     ToastModule,
-    InputTextModule
+    InputTextModule,
+    DropdownModule
   ]
 })
 export class MaintenanceModule { }

@@ -14,11 +14,19 @@ export interface Category {
   label: string;
   category: string;
   sortOrder: number;
+  type: CategoryType;
   items?: MaintenanceItem[];
   filteredItems?: MaintenanceItem[];
   isExpanded?: boolean;
 }
 
+export interface MaintenanceSortOption {
+  label: string;
+  icon: string;
+}
+
 export interface ReactiveFormControls {
   [x: string]: any;
 }
+
+export type CategoryType = 'category' | 'date';

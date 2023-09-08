@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { add } from 'date-fns';
-import { sortBy } from 'lodash';
+import { add, isBefore, isSameDay, set } from 'date-fns';
+import { filter, sortBy } from 'lodash';
 import { MessageService } from 'primeng/api';
 import { zip } from 'rxjs';
 import { SubSink } from 'subsink';
-import { MaintenanceItem, ReactiveFormControls } from '../maintenance.beans';
+import { DropdownChangeEvent } from '../../app.beans';
+import { MaintenanceItem, MaintenanceSortOption, ReactiveFormControls } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
 import { Category } from './../maintenance.beans';
@@ -20,8 +21,20 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   mainForm: FormGroup | undefined = undefined;
   maintItems: MaintenanceItem[] = [];
   categories: Category[] = [];
+  dateCategories: Category[] = [];
+  selectedCategories: Category[] = [];
+  filterValue: string = '';
 
   initialFormValues: any = [];
+
+  sortOptions: MaintenanceSortOption[] = [{
+    label: 'Category',
+    icon: 'fa-solid fa-list fa-fw'
+  }, {
+    label: 'Due Date',
+    icon: 'fa-regular fa-square-check fa-fw'
+  }];
+  selectedSort: MaintenanceSortOption = this.sortOptions[0];
 
   private subs = new SubSink();
 
@@ -39,11 +52,18 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     ).subscribe(([categories, maintItems]) => {
 
       // Sort by sortOrder property
-      this.categories = sortBy(categories, 'sortOrder');
+      this.categories = sortBy(filter(categories, ['type', 'category']), 'sortOrder');
+      this.dateCategories = sortBy(filter(categories, ['type', 'date']), 'sortOrder');
       this.maintItems = sortBy(maintItems, 'sortOrder');
 
       // Initialize the arrays which will hold the maintenance items
       this.categories.forEach((category: Category) => {
+        category.items = [];
+        category.filteredItems = [];
+        category.isExpanded = true;
+      });
+
+      this.dateCategories.forEach((category: Category) => {
         category.items = [];
         category.filteredItems = [];
         category.isExpanded = true;
@@ -59,13 +79,51 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
       const formControls = this.prepareFormControls(maintItems);
       if (!!formControls) {
-        this.mainForm = new FormGroup(formControls)
-        this.subs.sink = this.mainForm.valueChanges.subscribe({
-          next: (resp) => this.cdr.detectChanges(),
-          error: (err) => console.error('Error detecting form changes')
-        });
+        this.mainForm = new FormGroup(formControls);
         this.initialFormValues = this.mainForm.value;
       }
+
+      // Break down into date categories
+      // Calculate the date to check against for each option
+      const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+      const nextWeek = add(today, { weeks: 1 });
+      const nextMonth = add(today, { months: 1 });
+
+      // Add items to the appropriate categories
+      let categoryType: string;
+      this.maintItems.forEach((item: MaintenanceItem) => {
+        if (item.dueDate === 0) {
+          categoryType = 'noDate';
+        } else if (isSameDay(new Date(item.dueDate), today)) {
+          categoryType = 'today';
+        } else if (isBefore(new Date(item.dueDate), nextWeek)) {
+          categoryType = 'week';
+        } else if (isBefore(new Date(item.dueDate), nextMonth)) {
+          categoryType = 'month';
+        } else {
+          categoryType = 'future';
+        }
+        foundIndex = this.dateCategories.findIndex((category: Category) => category.category === categoryType);
+        this.dateCategories[foundIndex].items?.push(item);
+        this.dateCategories[foundIndex].filteredItems?.push(item);
+      });
+
+      // Sort the date categories entries by due date
+      this.dateCategories.forEach((category: Category) => {
+        if (category.items?.length === 0) {
+          category.isExpanded = false;
+        } else {
+          category.isExpanded = true;
+          category.items = sortBy(category.items, 'dueDate');
+          category.filteredItems = sortBy(category.filteredItems, 'dueDate');
+        }
+      });
+
+      // Filter items based on any existing filter
+      this.filterMaintItems();
+
+      // Set the correct view based on what is selected
+      this.selectedCategories = this.selectedSort.label === 'Category' ? this.categories : this.dateCategories;
     }, (err) => {
       console.error(err);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
@@ -94,6 +152,29 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to save data' });
       }
     });
+  }
+
+  filterMaintItems(): void {
+    this.categories.forEach((category: Category) => {
+      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
+      category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
+    });
+    this.dateCategories.forEach((category: Category) => {
+      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
+      category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
+    });
+  }
+
+  onChangeSortOption(event: DropdownChangeEvent<MaintenanceSortOption>) {
+    switch (event.value.label) {
+      case 'Category':
+        this.selectedCategories = this.categories;
+        break;
+      case 'Due Date':
+        this.selectedCategories = this.dateCategories;
+        break;
+      default: console.error(`Invalid sort option: ${event.value.label}`);
+    }
   }
 
   private prepareFormControls(items: MaintenanceItem[]): ReactiveFormControls {
@@ -132,13 +213,6 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       (items[foundIndex] as any)[objProp as keyof MaintenanceItem] = newValue;
     }
     return items;
-  }
-
-  filterMaintItems(event: KeyboardEvent): void {
-    this.categories.forEach((category: Category) => {
-      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes((event.target as any).value.toLowerCase()));
-      category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
-    });
   }
 
   ngOnDestroy(): void {

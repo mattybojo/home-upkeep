@@ -5,3 +5,8 @@ export interface AuthDropdownOption {
   url?: string;
   handler?: (event: Event) => void
 }
+
+export interface DropdownChangeEvent<T> {
+  originalEvent: PointerEvent;
+  value: T;
+}
