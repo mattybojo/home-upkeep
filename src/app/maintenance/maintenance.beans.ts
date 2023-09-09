@@ -1,6 +1,6 @@
 export interface MaintenanceItem {
   id?: string;
-  category: string;
+  category: CategoryType;
   label: string;
   control: string;
   lastCompletedDate: number;
@@ -14,7 +14,7 @@ export interface Category {
   label: string;
   category: string;
   sortOrder: number;
-  type: CategoryType;
+  type: ChecklistType;
   items?: MaintenanceItem[];
   filteredItems?: MaintenanceItem[];
   isExpanded?: boolean;
@@ -29,4 +29,5 @@ export interface ReactiveFormControls {
   [x: string]: any;
 }
 
-export type CategoryType = 'category' | 'date';
+export type ChecklistType = 'category' | 'date';
+export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'general' | 'kitchen' | 'pet';
