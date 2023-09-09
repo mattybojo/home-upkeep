@@ -1,11 +1,34 @@
 <p-accordion [multiple]="true">
   <p-accordionTab header="Maintenance Checklist" [selected]="isExpanded">
     <p-messages
-      [(value)]="maintMessages"
+      [(value)]="pastDueTasksMessages"
       [enableService]="false"
       [closable]="false"
     ></p-messages>
-    <p-table [value]="nextWeekTasks">
+    <p-table [value]="pastDueTasks" *ngIf="pastDueTasks.length > 0">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="label">
+            Task <p-sortIcon field="label"></p-sortIcon>
+          </th>
+          <th pSortableColumn="dueDate">
+            Due Date <p-sortIcon field="dueDate"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-task>
+        <tr>
+          <td>{{ task.label }}</td>
+          <td>{{ task.dueDateString }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-messages
+      [(value)]="upcomingTasksMessages"
+      [enableService]="false"
+      [closable]="false"
+    ></p-messages>
+    <p-table [value]="upcomingTasks" *ngIf="upcomingTasks.length > 0">
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="label">

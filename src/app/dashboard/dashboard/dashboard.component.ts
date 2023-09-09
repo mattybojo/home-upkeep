@@ -14,8 +14,10 @@ import { sortBy } from 'lodash';
 export class DashboardComponent implements OnInit, OnDestroy {
 
   isExpanded: boolean = true;
-  maintMessages: Message[] = [];
-  nextWeekTasks: MaintenanceItem[] = [];
+  pastDueTasksMessages: Message[] = [];
+  upcomingTasksMessages: Message[] = [];
+  pastDueTasks: MaintenanceItem[] = [];
+  upcomingTasks: MaintenanceItem[] = [];
 
   private subs = new SubSink();
 
@@ -24,22 +26,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs.sink = this.maintenanceService.getMaintenanceItems().subscribe({
       next: (maintItems: MaintenanceItem[]) => {
-        this.maintMessages = [];
+        this.pastDueTasksMessages = [];
+        this.upcomingTasksMessages = [];
         const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-        const pastDueItems: MaintenanceItem[] = maintItems.filter((item: MaintenanceItem) => item.dueDate && isAfter(today, new Date(item.dueDate)));
+        this.pastDueTasks = maintItems.filter((item: MaintenanceItem) => item.dueDate && isAfter(today, new Date(item.dueDate)));
         let pastDueSeverity: string = 'success';
-        if (pastDueItems.length > 0) {
+        if (this.pastDueTasks.length > 0) {
           pastDueSeverity = 'error';
         }
-        this.maintMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There are currently ${pastDueItems.length} past due tasks on your checklist.` });
+        this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your checklist.` });
 
         const nextWeek: Date = add(today, { days: 7 });
-        this.nextWeekTasks = maintItems.filter((item: MaintenanceItem) => item.dueDate && isBefore(new Date(item.dueDate), nextWeek));
-        this.nextWeekTasks.forEach((task: MaintenanceItem) => {
+        this.upcomingTasks = maintItems.filter((item: MaintenanceItem) => item.dueDate && isBefore(new Date(item.dueDate), nextWeek));
+        this.upcomingTasks.forEach((task: MaintenanceItem) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
         });
-        this.nextWeekTasks = sortBy(this.nextWeekTasks, ['dueDate', 'label']);
-        this.maintMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There are currently ${this.nextWeekTasks.length} tasks with due dates this next week.` });
+        this.upcomingTasks = sortBy(this.upcomingTasks, ['dueDate', 'label']);
+        this.upcomingTasksMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There ${this.upcomingTasks.length === 1 ? 'is' : 'are'} currently ${this.upcomingTasks.length} tasks with due dates this next week.` });
       },
       error: (err) => console.error(err)
     });
