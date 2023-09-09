@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
-  DocumentData,
-  DocumentReference, Firestore,
-  addDoc, collection, collectionData
+  Firestore,
+  collection, collectionData, doc, setDoc
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { User } from '@firebase/auth-types';
@@ -26,9 +25,26 @@ export class AuthService {
   constructor(private afAuth: AngularFireAuth, private router: Router,
     private db: Firestore) {
 
+    const localUser = localStorage.getItem('user');
+    let isLoggedIn: boolean = false;
+    if (localUser) {
+      this._user = JSON.parse(localUser) as unknown as User;
+      this.isLoggedIn$.next(true);
+      isLoggedIn = true;
+    }
+
     this.afAuth.authState.subscribe((user: User | null) => {
       this._user = user;
-      this.isLoggedIn$.next(!!user);
+
+      if (!isLoggedIn) {
+        this.isLoggedIn$.next(!!user);
+      }
+
+      if (!!user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('user');
+      }
     });
   }
 
@@ -45,9 +61,9 @@ export class AuthService {
     return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>;
   }
 
-  saveUser(user: User): Observable<DocumentReference<DocumentData | null>> {
-    const userRef = collection(this.db, 'users');
-    return from(addDoc(userRef, this.convertToFirestoreUser(user)));
+  saveUser(user: User): Observable<void> {
+    const userRef = doc(this.db, `users/${user.uid}`);
+    return from(setDoc(userRef, this.convertToFirestoreUser(user)));
   }
 
   private convertToFirestoreUser(user: User): HomneUpkeepUser {

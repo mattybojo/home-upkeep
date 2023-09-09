@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, WriteBatch, collection, collectionData, doc, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, WriteBatch, and, collection, collectionData, doc, or, query, where, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
+import { AuthService } from './../auth/auth.service';
 import { Category, MaintenanceItem } from './maintenance.beans';
 
 @Injectable({
@@ -8,10 +9,10 @@ import { Category, MaintenanceItem } from './maintenance.beans';
 })
 export class MaintenanceService {
 
-  constructor(private db: Firestore) { }
+  constructor(private db: Firestore, private authService: AuthService) { }
 
   getMaintenanceItems(): Observable<MaintenanceItem[]> {
-    const maintItemsRef = collection(this.db, 'maintenanceItems');
+    const maintItemsRef = query(collection(this.db, 'maintenanceItems'), or(where('category', '!=', 'personal'), and(where('category', '==', 'personal'), where('uid', '==', this.authService.user!.uid))));
     return collectionData(maintItemsRef, { idField: 'id' }) as Observable<MaintenanceItem[]>;
   }
 
@@ -21,11 +22,11 @@ export class MaintenanceService {
     maintItems.forEach((item: MaintenanceItem) => {
       if (!!item.id) {
         ref = doc(this.db, `maintenanceItems/${item.id}`);
-        batch.update(ref, { ...item });
+        batch.update(ref, { ...item, uid: this.authService.user!.uid });
       } else {
         ref = doc(collection(this.db, 'maintenanceItems'));
         const { id, ...restOfItem } = item;
-        batch.set(ref, restOfItem);
+        batch.set(ref, { ...restOfItem, uid: this.authService.user!.uid });
       }
     });
 
