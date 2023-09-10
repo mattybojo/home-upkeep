@@ -7,7 +7,7 @@ import {
 import { Router } from '@angular/router';
 import { User } from '@firebase/auth-types';
 import { BehaviorSubject, Observable, from } from 'rxjs';
-import { HomneUpkeepUser } from './auth.beans';
+import { HomeUpkeepUser } from './auth.beans';
 
 @Injectable({
   providedIn: 'root'
@@ -58,7 +58,7 @@ export class AuthService {
 
   getUsers(): Observable<User[]> {
     const usersRef = collection(this.db, 'users');
-    return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>;
+    return collectionData(usersRef) as Observable<User[]>;
   }
 
   saveUser(user: User): Observable<void> {
@@ -66,7 +66,7 @@ export class AuthService {
     return from(setDoc(userRef, this.convertToFirestoreUser(user)));
   }
 
-  private convertToFirestoreUser(user: User): HomneUpkeepUser {
+  private convertToFirestoreUser(user: User): HomeUpkeepUser {
     return {
       displayName: user.displayName!,
       email: user.email!,

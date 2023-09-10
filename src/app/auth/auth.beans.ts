@@ -1,4 +1,4 @@
-export interface HomneUpkeepUser {
+export interface HomeUpkeepUser {
   displayName: string;
   email: string;
   emailVerified: boolean;

@@ -7,6 +7,7 @@ export interface MaintenanceItem {
   dueDate: number;
   sortOrder: number;
   dueDateString?: string;
+  uid?: string;
 }
 
 export interface Category {
@@ -30,4 +31,4 @@ export interface ReactiveFormControls {
 }
 
 export type ChecklistType = 'category' | 'date';
-export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'general' | 'kitchen' | 'pet';
+export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet';
