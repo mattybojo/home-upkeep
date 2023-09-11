@@ -4,11 +4,13 @@ import { isAfter, set } from 'date-fns';
 @Directive({
   selector: '[checklistRowStatus]'
 })
-export class ChecklistRowStatusDirective implements OnInit, OnChanges {
+export class ChecklistRowStatusDirective implements OnChanges {
   // @ts-ignore
   @Input() doneDate: Date;
   // @ts-ignore
   @Input() dueDate: Date;
+  // @ts-ignore
+  @Input() isTouched: boolean = '';
   protected _elementClass: string[] = [];
 
   // @ts-ignore
@@ -28,12 +30,11 @@ export class ChecklistRowStatusDirective implements OnInit, OnChanges {
 
   constructor() { }
 
-  ngOnInit(): void {
-    this.initialDoneDate = this.doneDate;
-    this.initialDueDate = this.dueDate;
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
+    if (!this.isTouched) {
+      this.initialDoneDate = this.doneDate;
+      this.initialDueDate = this.dueDate;
+    }
     const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
     let elClasses: string[] = ['flex', 'w-full'];
 

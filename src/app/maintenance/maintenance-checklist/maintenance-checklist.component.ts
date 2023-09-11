@@ -146,6 +146,8 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     this.maintenanceService.saveMaintenanceItems(request).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved form data' });
+        this.initialFormValues = this.mainForm!.value;
+        this.mainForm!.reset(this.initialFormValues);
       },
       error: (err: any) => {
         console.error(err);
