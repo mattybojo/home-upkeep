@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenance-checklist.component';
 import { MaintenanceRoutingModule } from './maintenance-routing.moddule';
 import { ChecklistRowStatusDirective } from './shared/checklist-row-status.directive';
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ChecklistRowStatusDirective } from './shared/checklist-row-status.direc
     CalendarModule,
     ToastModule,
     InputTextModule,
-    DropdownModule
+    DropdownModule,
+    TooltipModule
   ]
 })
 export class MaintenanceModule { }
