@@ -49,84 +49,86 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     this.subs.sink = zip(
       this.maintenanceService.getCategories(),
       this.maintenanceService.getMaintenanceItems()
-    ).subscribe(([categories, maintItems]) => {
+    ).subscribe({
+      next: ([categories, maintItems]) => {
+        // Sort by sortOrder property
+        this.categories = sortBy(filter(categories, ['type', 'category']), 'sortOrder');
+        this.dateCategories = sortBy(filter(categories, ['type', 'date']), 'sortOrder');
+        this.maintItems = sortBy(maintItems, 'sortOrder');
 
-      // Sort by sortOrder property
-      this.categories = sortBy(filter(categories, ['type', 'category']), 'sortOrder');
-      this.dateCategories = sortBy(filter(categories, ['type', 'date']), 'sortOrder');
-      this.maintItems = sortBy(maintItems, 'sortOrder');
-
-      // Initialize the arrays which will hold the maintenance items
-      this.categories.forEach((category: Category) => {
-        category.items = [];
-        category.filteredItems = [];
-        category.isExpanded = true;
-      });
-
-      this.dateCategories.forEach((category: Category) => {
-        category.items = [];
-        category.filteredItems = [];
-        category.isExpanded = true;
-      });
-
-      // Sort items into categories
-      let foundIndex: number;
-      this.maintItems.forEach((item: MaintenanceItem) => {
-        foundIndex = this.categories.findIndex((category: Category) => category.category === item.category);
-        this.categories[foundIndex].items?.push(item);
-        this.categories[foundIndex].filteredItems?.push(item);
-      });
-
-      const formControls = this.prepareFormControls(maintItems);
-      if (!!formControls) {
-        this.mainForm = new FormGroup(formControls);
-        this.initialFormValues = this.mainForm.value;
-      }
-
-      // Break down into date categories
-      // Calculate the date to check against for each option
-      const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-      const nextWeek = add(today, { weeks: 1 });
-      const nextMonth = add(today, { months: 1 });
-
-      // Add items to the appropriate categories
-      let categoryType: string;
-      this.maintItems.forEach((item: MaintenanceItem) => {
-        if (item.dueDate === 0) {
-          categoryType = 'noDate';
-        } else if (isSameDay(new Date(item.dueDate), today)) {
-          categoryType = 'today';
-        } else if (isBefore(new Date(item.dueDate), nextWeek)) {
-          categoryType = 'week';
-        } else if (isBefore(new Date(item.dueDate), nextMonth)) {
-          categoryType = 'month';
-        } else {
-          categoryType = 'future';
-        }
-        foundIndex = this.dateCategories.findIndex((category: Category) => category.category === categoryType);
-        this.dateCategories[foundIndex].items?.push(item);
-        this.dateCategories[foundIndex].filteredItems?.push(item);
-      });
-
-      // Sort the date categories entries by due date
-      this.dateCategories.forEach((category: Category) => {
-        if (category.items?.length === 0) {
-          category.isExpanded = false;
-        } else {
+        // Initialize the arrays which will hold the maintenance items
+        this.categories.forEach((category: Category) => {
+          category.items = [];
+          category.filteredItems = [];
           category.isExpanded = true;
-          category.items = sortBy(category.items, 'dueDate');
-          category.filteredItems = sortBy(category.filteredItems, 'dueDate');
+        });
+
+        this.dateCategories.forEach((category: Category) => {
+          category.items = [];
+          category.filteredItems = [];
+          category.isExpanded = true;
+        });
+
+        // Sort items into categories
+        let foundIndex: number;
+        this.maintItems.forEach((item: MaintenanceItem) => {
+          foundIndex = this.categories.findIndex((category: Category) => category.category === item.category);
+          this.categories[foundIndex].items?.push(item);
+          this.categories[foundIndex].filteredItems?.push(item);
+        });
+
+        const formControls = this.prepareFormControls(maintItems);
+        if (!!formControls) {
+          this.mainForm = new FormGroup(formControls);
+          this.initialFormValues = this.mainForm.value;
         }
-      });
 
-      // Filter items based on any existing filter
-      this.filterMaintItems();
+        // Break down into date categories
+        // Calculate the date to check against for each option
+        const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
+        const nextWeek = add(today, { weeks: 1 });
+        const nextMonth = add(today, { months: 1 });
 
-      // Set the correct view based on what is selected
-      this.selectedCategories = this.selectedSort.label === 'Category' ? this.categories : this.dateCategories;
-    }, (err) => {
-      console.error(err);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
+        // Add items to the appropriate categories
+        let categoryType: string;
+        this.maintItems.forEach((item: MaintenanceItem) => {
+          if (item.dueDate === 0) {
+            categoryType = 'noDate';
+          } else if (isSameDay(new Date(item.dueDate), today)) {
+            categoryType = 'today';
+          } else if (isBefore(new Date(item.dueDate), nextWeek)) {
+            categoryType = 'week';
+          } else if (isBefore(new Date(item.dueDate), nextMonth)) {
+            categoryType = 'month';
+          } else {
+            categoryType = 'future';
+          }
+          foundIndex = this.dateCategories.findIndex((category: Category) => category.category === categoryType);
+          this.dateCategories[foundIndex].items?.push(item);
+          this.dateCategories[foundIndex].filteredItems?.push(item);
+        });
+
+        // Sort the date categories entries by due date
+        this.dateCategories.forEach((category: Category) => {
+          if (category.items?.length === 0) {
+            category.isExpanded = false;
+          } else {
+            category.isExpanded = true;
+            category.items = sortBy(category.items, 'dueDate');
+            category.filteredItems = sortBy(category.filteredItems, 'dueDate');
+          }
+        });
+
+        // Filter items based on any existing filter
+        this.filterMaintItems();
+
+        // Set the correct view based on what is selected
+        this.selectedCategories = this.selectedSort.label === 'Category' ? this.categories : this.dateCategories;
+      },
+      error: (err) => {
+        console.error(err);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
+      }
     });
   }
 
