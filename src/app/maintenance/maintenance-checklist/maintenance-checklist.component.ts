@@ -158,6 +158,11 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     });
   }
 
+  resetFilter(): void {
+    this.filterValue = '';
+    this.filterMaintItems();
+  }
+
   filterMaintItems(): void {
     this.categories.forEach((category: Category) => {
       category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
