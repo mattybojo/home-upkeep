@@ -1,3 +1,7 @@
 .next-due-date-btns > *:not(:last-child) {
   margin-right: 0.25rem;
 }
+
+.filter-input.p-input-icon-right > i {
+  top: 40%;
+}
