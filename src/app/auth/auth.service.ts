@@ -73,6 +73,7 @@ export class AuthService {
       emailVerified: user.emailVerified,
       dateCreated: new Date(user.metadata.creationTime!).getTime(),
       dateLastModified: new Date(user.metadata.lastSignInTime!).getTime(),
+      isAdmin: false,
       phoneNumber: user.phoneNumber!,
       photoURL: user.photoURL!,
       uid: user.uid
