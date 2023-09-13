@@ -1,0 +1,60 @@
+<form [formGroup]="modalForm!" *ngIf="modalForm" class="modal-form">
+  <div class="field">
+    <label for="item-label">Label</label>
+    <input
+      id="item-label"
+      type="text"
+      class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      formControlName="label"
+    />
+  </div>
+  <div class="field">
+    <label for="item-category">Category</label>
+    <p-dropdown
+      id="item-category"
+      formControlName="category"
+      appendTo="body"
+      [options]="categoryOptions"
+      styleClass="text-base text-color border-round w-full"
+    ></p-dropdown>
+  </div>
+  <div class="field">
+    <label for="item-notes">Notes</label>
+    <ckeditor
+      id="item-notes"
+      [editor]="Editor"
+      [data]="modalForm.controls['notes'].value"
+      #editor
+    ></ckeditor>
+  </div>
+  <div class="field">
+    <label for="item-last-completed">Last Completed</label>
+    <p-calendar
+      id="item-last-completed"
+      appendTo="body"
+      formControlName="lastCompletedDate"
+      [style]="{ width: '100%' }"
+      [inputStyle]="{ width: '100%' }"
+      [showIcon]="true"
+      [showButtonBar]="true"
+    ></p-calendar>
+  </div>
+  <div class="field">
+    <label for="item-due-date">Due Date</label>
+    <p-calendar
+      id="item-due-date"
+      appendTo="body"
+      formControlName="dueDate"
+      [style]="{ width: '100%' }"
+      [inputStyle]="{ width: '100%' }"
+      [showIcon]="true"
+      [showButtonBar]="true"
+    ></p-calendar>
+  </div>
+  <hr />
+  <p-button
+    label="Confirm"
+    styleClass="p-button-raised"
+    (onClick)="updateItem()"
+  ></p-button>
+</form>

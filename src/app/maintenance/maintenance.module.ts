@@ -1,20 +1,24 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenance-checklist.component';
+import { MaintenanceItemModalComponent } from './maintenance-item-modal/maintenance-item-modal.component';
 import { MaintenanceRoutingModule } from './maintenance-routing.moddule';
 import { ChecklistRowStatusDirective } from './shared/checklist-row-status.directive';
-import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [
     MaintenanceChecklistComponent,
-    ChecklistRowStatusDirective
+    ChecklistRowStatusDirective,
+    MaintenanceItemModalComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +30,9 @@ import { TooltipModule } from 'primeng/tooltip';
     ToastModule,
     InputTextModule,
     DropdownModule,
-    TooltipModule
+    TooltipModule,
+    DynamicDialogModule,
+    CKEditorModule
   ]
 })
 export class MaintenanceModule { }

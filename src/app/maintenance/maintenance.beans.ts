@@ -1,3 +1,5 @@
+import { SelectItem } from 'primeng/api/selectitem';
+
 export interface MaintenanceItem {
   id?: string;
   category: CategoryType;
@@ -33,3 +35,37 @@ export interface ReactiveFormControls {
 
 export type ChecklistType = 'category' | 'date';
 export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet';
+
+export const getCategoryTypes = (): SelectItem[] => {
+  return [{
+    label: 'Backyard',
+    value: 'backyard'
+  }, {
+    label: 'Bedroom',
+    value: 'bedroom'
+  }, {
+    label: 'Car',
+    value: 'car'
+  }, {
+    label: 'Front Yard',
+    value: 'frontYard'
+  }, {
+    label: 'Garage',
+    value: 'garage'
+  }, {
+    label: 'General',
+    value: 'general'
+  }, {
+    label: 'Guest Room',
+    value: 'guestRoom'
+  }, {
+    label: 'Kitchen',
+    value: 'kitchen'
+  }, {
+    label: 'Personal',
+    value: 'personal'
+  }, {
+    label: 'Pet',
+    value: 'pet'
+  }];
+}
