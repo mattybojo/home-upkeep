@@ -105,11 +105,13 @@
                 {{ item.label }}
                 <i
                   class="fa-solid fa-circle-info fa-fw"
-                  [pTooltip]="item.notes"
-                  [escape]="false"
+                  (click)="op.toggle($event)"
                   *ngIf="item.notes"
-                ></i
-              ></span>
+                ></i>
+                <p-overlayPanel #op>
+                  <p [innerHTML]="item.notes"></p>
+                </p-overlayPanel>
+              </span>
             </div>
             <div class="col-2">
               <p-calendar
