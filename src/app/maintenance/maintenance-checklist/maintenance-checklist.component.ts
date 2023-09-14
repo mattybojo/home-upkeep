@@ -137,25 +137,53 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     }
   }
 
+  addNewMaintenanceItem(): void {
+    this.onClickEditItem({
+      category: 'backyard',
+      control: '',
+      dueDate: 0,
+      label: '',
+      lastCompletedDate: 0,
+      notes: '',
+      sortOrder: -1
+    });
+  }
+
   onClickEditItem(item: MaintenanceItem): void {
     this.ref = this.dialogService.open(MaintenanceItemModalComponent, {
       header: item.label,
       maximizable: true,
       data: {
-        item: item
+        item: item,
       }
     });
 
     this.subs.sink = this.ref.onClose.subscribe({
       next: (maintItem: MaintenanceItem) => {
-        // Update category.items here
-        let index = this.maintItems.findIndex((myItem: MaintenanceItem) => myItem.control === maintItem.control);
-        this.maintItems[index] = maintItem;
-        this.sortItemsIntoCategories();
+        const dateControlValue: Date | undefined = maintItem.lastCompletedDate === 0 ? undefined : new Date(maintItem.lastCompletedDate);
+        const dueDateControlValue: Date | undefined = maintItem.dueDate === 0 ? undefined : new Date(maintItem.dueDate);
+        if (maintItem.sortOrder === -1) {
+          // This is a new item
+          // Calculate sortOrder based on category (items.length + 1 === new sort order)
+          maintItem.sortOrder = this.categories.find((cat: Category) => maintItem.category === cat.category)!.items!.length + 1;
 
-        // Update mainForm
-        this.mainForm!.controls[`${maintItem.control}Date`]!.setValue(new Date(maintItem.lastCompletedDate));
-        this.mainForm!.controls[`${maintItem.control}DueDate`]!.setValue(new Date(maintItem.dueDate));
+          this.maintItems.push(maintItem);
+          this.sortItemsIntoCategories();
+
+          // Create new controls in the form
+          this.mainForm!.addControl(`${maintItem.control}Date`, new FormControl(dateControlValue, null));
+          this.mainForm!.addControl(`${maintItem.control}DueDate`, new FormControl(dueDateControlValue, null));
+        } else {
+          // This is an existing item
+          // Update category.items here
+          let index = this.maintItems.findIndex((myItem: MaintenanceItem) => myItem.control === maintItem.control);
+          this.maintItems[index] = maintItem;
+          this.sortItemsIntoCategories();
+
+          // Update mainForm
+          this.mainForm!.controls[`${maintItem.control}Date`]!.setValue(dateControlValue);
+          this.mainForm!.controls[`${maintItem.control}DueDate`]!.setValue(dueDateControlValue);
+        }
       }
     });
   }

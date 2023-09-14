@@ -56,5 +56,6 @@
     label="Confirm"
     styleClass="p-button-raised"
     (onClick)="updateItem()"
+    [disabled]="modalForm.invalid"
   ></p-button>
 </form>

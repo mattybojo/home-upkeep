@@ -34,7 +34,7 @@ export interface ReactiveFormControls {
 }
 
 export type ChecklistType = 'category' | 'date';
-export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet';
+export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet' | 'todo';
 
 export const getCategoryTypes = (): SelectItem[] => {
   return [{
@@ -53,7 +53,7 @@ export const getCategoryTypes = (): SelectItem[] => {
     label: 'Garage',
     value: 'garage'
   }, {
-    label: 'General',
+    label: 'General Housekeeping',
     value: 'general'
   }, {
     label: 'Guest Room',
@@ -67,5 +67,8 @@ export const getCategoryTypes = (): SelectItem[] => {
   }, {
     label: 'Pet',
     value: 'pet'
+  }, {
+    label: 'Todo Item',
+    value: 'todo'
   }];
 }
