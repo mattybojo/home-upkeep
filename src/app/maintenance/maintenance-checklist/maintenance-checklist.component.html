@@ -42,8 +42,8 @@
             <i [class]="item.icon"></i>
             <div>{{ item.label }}</div>
           </div>
-        </ng-template></p-dropdown
-      >
+        </ng-template>
+      </p-dropdown>
       <div class="inline-flex">
         <p class="p-input-icon-right filter-input">
           <i
@@ -100,9 +100,15 @@
           >
             <div class="col-6 flex align-items-center">
               <p-button
-                styleClass="p-button-raised mr-1"
+                styleClass="p-button-raised p-button-primary mr-1"
                 icon="fa-fw fa-solid fa-pen-to-square"
                 (onClick)="onClickEditItem(item)"
+                *ngIf="!isViewMode"
+              ></p-button>
+              <p-button
+                styleClass="p-button-raised p-button-danger mr-1"
+                icon="fa-fw fa-solid fa-trash"
+                (onClick)="onClickDeleteItem($event, item.id)"
                 *ngIf="!isViewMode"
               ></p-button>
               <span class="vertical-align-sub">
@@ -158,3 +164,4 @@
 </form>
 
 <p-toast position="top-right"></p-toast>
+<p-confirmPopup></p-confirmPopup>

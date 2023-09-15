@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -32,7 +33,8 @@ import { ChecklistRowStatusDirective } from './shared/checklist-row-status.direc
     DropdownModule,
     OverlayPanelModule,
     DynamicDialogModule,
-    CKEditorModule
+    CKEditorModule,
+    ConfirmPopupModule
   ]
 })
 export class MaintenanceModule { }

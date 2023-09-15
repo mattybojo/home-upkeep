@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, WriteBatch, and, collection, collectionData, doc, or, query, where, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, WriteBatch, and, collection, collectionData, deleteDoc, doc, or, query, where, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { Category, MaintenanceItem } from './maintenance.beans';
@@ -33,6 +33,10 @@ export class MaintenanceService {
     });
 
     return from(batch.commit());
+  }
+
+  deleteMaintenanceItem(id: string): Observable<void> {
+    return from(deleteDoc(doc(this.db, `maintenanceItems/${id}`)));
   }
 
   getCategories(): Observable<Category[]> {

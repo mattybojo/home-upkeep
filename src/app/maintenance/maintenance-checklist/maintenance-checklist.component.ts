@@ -1,23 +1,23 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { add, isBefore, isSameDay, set } from 'date-fns';
 import { filter, sortBy } from 'lodash';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { zip } from 'rxjs';
 import { SubSink } from 'subsink';
 import { DropdownChangeEvent } from '../../app.beans';
+import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
 import { MaintenanceItem, MaintenanceSortOption, ReactiveFormControls } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
 import { Category } from './../maintenance.beans';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
 
 @Component({
   selector: 'app-maintenance-checklist',
   templateUrl: './maintenance-checklist.component.html',
   styleUrls: ['./maintenance-checklist.component.scss'],
-  providers: [MessageService, DialogService]
+  providers: [MessageService, DialogService, ConfirmationService]
 })
 export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   mainForm: FormGroup | undefined = undefined;
@@ -45,7 +45,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   constructor(private maintenanceService: MaintenanceService,
     private messageService: MessageService, private dialogService: DialogService,
-    private cdr: ChangeDetectorRef) { }
+    private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -185,6 +185,28 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           this.mainForm!.controls[`${maintItem.control}DueDate`]!.setValue(dueDateControlValue);
         }
       }
+    });
+  }
+
+  onClickDeleteItem(event: Event, id: string): void {
+    this.confirmationService.confirm({
+      target: (event.currentTarget || event.target) as EventTarget,
+      message: 'Are you sure that you want to delete?',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.subs.sink = this.maintenanceService.deleteMaintenanceItem(id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Item deleted successfully' });
+            const deleteIndex = this.maintItems.findIndex((item: MaintenanceItem) => item.id === id);
+            this.maintItems.splice(deleteIndex, 1);
+            this.sortItemsIntoCategories();
+          }, error: (err) => {
+            console.error(err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete item' });
+          }
+        });
+      },
+      reject: () => { }
     });
   }
 
