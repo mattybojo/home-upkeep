@@ -1,5 +1,6 @@
-import { Directive, HostBinding, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { isAfter, set } from 'date-fns';
+import { Directive, HostBinding, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { isAfter, isSameDay, set } from 'date-fns';
+import { without } from 'lodash';
 
 @Directive({
   selector: '[checklistRowStatus]'
@@ -31,6 +32,8 @@ export class ChecklistRowStatusDirective implements OnChanges {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
+    const errorClass: string = 'bg-red-700';
+
     if (!this.isTouched) {
       this.initialDoneDate = this.doneDate;
       this.initialDueDate = this.dueDate;
@@ -40,7 +43,7 @@ export class ChecklistRowStatusDirective implements OnChanges {
 
     // Error: Last completed date cannot be in the future
     if (isAfter(this.doneDate, today)) {
-      elClasses.push('bg-red-700');
+      elClasses.push(errorClass);
       elClasses.push('text-white');
     }
 
@@ -51,6 +54,12 @@ export class ChecklistRowStatusDirective implements OnChanges {
 
     if (!(changes['doneDate']?.firstChange && changes['dueDate']?.firstChange) && (this.initialDoneDate?.getTime() !== this.doneDate?.getTime() || this.initialDueDate?.getTime() !== this.dueDate?.getTime())) {
       elClasses.push('bg-purple-100');
+    }
+
+    // If doneDate and dueDate are the same date, task is considered 'done' so remove any error classes
+    if (isSameDay(this.doneDate, this.dueDate) && !elClasses.includes(errorClass)) {
+      elClasses.push('bg-green-200');
+      elClasses = without(elClasses, ...['bg-red-300', 'bg-purple-100']);
     }
 
     this._elementClass = elClasses;
