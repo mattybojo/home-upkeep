@@ -12,7 +12,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ToastModule } from 'primeng/toast';
 import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenance-checklist.component';
 import { MaintenanceItemModalComponent } from './maintenance-item-modal/maintenance-item-modal.component';
-import { MaintenanceRoutingModule } from './maintenance-routing.moddule';
+import { MaintenanceRoutingModule } from './maintenance-routing.module';
 import { ChecklistRowStatusDirective } from './shared/checklist-row-status.directive';
 
 @NgModule({
