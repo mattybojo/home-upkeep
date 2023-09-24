@@ -10,7 +10,6 @@ import { AuthService } from './auth/auth.service';
 })
 export class AppComponent {
 
-  menuItems: MenuItem[] | undefined;
   authOptions: AuthDropdownOption[] | undefined;
   isSidebarVisible: boolean = false;
 
