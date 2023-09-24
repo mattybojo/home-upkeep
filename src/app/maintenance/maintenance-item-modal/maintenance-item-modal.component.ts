@@ -1,12 +1,11 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { camelCase } from 'lodash';
+import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MaintenanceItem, getCategoryTypes } from '../maintenance.beans';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { SelectItem } from 'primeng/api/selectitem';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
-import { EditorConfig } from '@ckeditor/ckeditor5-core';
-import { camelCase } from 'lodash';
 
 @Component({
   selector: 'app-maintenance-item-modal',
@@ -21,12 +20,12 @@ export class MaintenanceItemModalComponent implements OnInit {
   categoryOptions: SelectItem[] = getCategoryTypes();
   public Editor = ClassicEditor;
 
-  @ViewChild('editor') editorComponent!: CKEditorComponent;
+  @ViewChild('ckNotes') ckNotes!: CKEditorComponent;
 
   constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig) { }
 
   ngOnInit(): void {
-    this.item = this.config.data.item;
+    this.item = Object.assign({}, this.config.data.item);
 
     this.modalForm = new FormGroup({
       control: new FormControl(this.item!.control, null),
@@ -50,6 +49,6 @@ export class MaintenanceItemModalComponent implements OnInit {
       this.modalForm!.get('control')!.setValue(camelCase(this.modalForm!.get('label')!.value));
     }
 
-    this.ref.close(Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.editorComponent.editorInstance?.data.get(), lastCompletedDate, dueDate }));
+    this.ref.close(Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate }));
   }
 }

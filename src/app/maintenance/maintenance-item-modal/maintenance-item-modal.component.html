@@ -24,7 +24,7 @@
       id="item-notes"
       [editor]="Editor"
       [data]="modalForm.controls['notes'].value"
-      #editor
+      #ckNotes
     ></ckeditor>
   </div>
   <div class="field">
@@ -54,7 +54,7 @@
   <hr />
   <p-button
     label="Confirm"
-    styleClass="p-button-raised"
+    styleClass="p-button-raised p-button-primary"
     (onClick)="updateItem()"
     [disabled]="modalForm.invalid"
   ></p-button>

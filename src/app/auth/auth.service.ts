@@ -62,8 +62,7 @@ export class AuthService {
   }
 
   saveUser(user: User): Observable<void> {
-    const userRef = doc(this.db, `users/${user.uid}`);
-    return from(setDoc(userRef, this.convertToFirestoreUser(user)));
+    return from(setDoc(doc(this.db, `users/${user.uid}`), this.convertToFirestoreUser(user)));
   }
 
   private convertToFirestoreUser(user: User): HomeUpkeepUser {
