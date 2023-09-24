@@ -1,4 +1,4 @@
-<form [formGroup]="mainForm" (ngSubmit)="saveForm()" *ngIf="mainForm">
+<form [formGroup]="maintForm" (ngSubmit)="saveForm()" *ngIf="maintForm">
   <div class="grid">
     <div class="col-12 flex justify-content-end">
       <p-button
@@ -17,7 +17,7 @@
         styleClass="p-button-raised p-button-primary mb-2 mr-1"
         icon="fa-fw fa-solid fa-floppy-disk"
         type="submit"
-        [disabled]="mainForm.invalid"
+        [disabled]="maintForm.invalid"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-help mb-2 mr-1"
@@ -91,12 +91,12 @@
       <hr />
 
       <div class="grid">
-        <ng-container *ngFor="let item of items; trackBy: identifyMaintItem">
+        <ng-container *ngFor="let item of items">
           <div
             checklistRowStatus
-            [doneDate]="mainForm.get(item.control + 'Date')?.value"
-            [dueDate]="mainForm.get(item.control + 'DueDate')?.value"
-            [isTouched]="mainForm.get(item.control + 'DueDate')?.touched!"
+            [doneDate]="maintForm.get(item.control + 'Date')?.value"
+            [dueDate]="maintForm.get(item.control + 'DueDate')?.value"
+            [isTouched]="maintForm.get(item.control + 'DueDate')?.touched!"
           >
             <div class="col-6 flex align-items-center">
               <p-button
@@ -141,17 +141,17 @@
               <div class="next-due-date-btns">
                 <p-button
                   label="+Wk"
-                  styleClass="p-button-raised"
+                  styleClass="p-button-raised p-button-primary"
                   (click)="updateDueDate(item.control, { weeks: 1 })"
                 ></p-button>
                 <p-button
                   label="+Mo"
-                  styleClass="p-button-raised"
+                  styleClass="p-button-raised p-button-primary"
                   (click)="updateDueDate(item.control, { months: 1 })"
                 ></p-button>
                 <p-button
                   label="+Yr"
-                  styleClass="p-button-raised"
+                  styleClass="p-button-raised p-button-primary"
                   (click)="updateDueDate(item.control, { years: 1 })"
                 ></p-button>
               </div>

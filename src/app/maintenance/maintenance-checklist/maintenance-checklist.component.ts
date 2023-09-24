@@ -20,7 +20,7 @@ import { Category } from './../maintenance.beans';
   providers: [MessageService, DialogService, ConfirmationService]
 })
 export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
-  mainForm: FormGroup | undefined = undefined;
+  maintForm: FormGroup | undefined = undefined;
   maintItems: MaintenanceItem[] = [];
   categories: Category[] = [];
   dateCategories: Category[] = [];
@@ -64,8 +64,8 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
         const formControls = this.prepareFormControls(maintItems);
         if (!!formControls) {
-          this.mainForm = new FormGroup(formControls);
-          this.initialFormValues = this.mainForm.value;
+          this.maintForm = new FormGroup(formControls);
+          this.initialFormValues = this.maintForm.value;
         }
 
         this.sortItemsIntoCategories();
@@ -78,33 +78,33 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve data' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve task data' });
       }
     });
   }
 
   updateDueDate(controlName: string, duration: Duration) {
-    const theControl = this.mainForm!.controls[`${controlName}DueDate`];
+    const theControl = this.maintForm!.controls[`${controlName}DueDate`];
     if (!!theControl.value) {
       theControl.setValue(add(theControl.value, duration));
     }
   }
 
   resetForm(): void {
-    this.mainForm?.reset(this.initialFormValues);
+    this.maintForm?.reset(this.initialFormValues);
   }
 
   saveForm(): void {
-    const request = this.prepareRequest(this.mainForm!.controls);
+    const request = this.prepareRequest(this.maintForm!.controls);
     this.maintenanceService.saveMaintenanceItems(request).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved form data' });
-        this.initialFormValues = this.mainForm!.value;
-        this.mainForm!.reset(this.initialFormValues);
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved all task data' });
+        this.initialFormValues = this.maintForm!.value;
+        this.maintForm!.reset(this.initialFormValues);
       },
       error: (err: any) => {
         console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to save data' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to save task data' });
       }
     });
   }
@@ -160,29 +160,31 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
     this.subs.sink = this.ref.onClose.subscribe({
       next: (maintItem: MaintenanceItem) => {
-        const dateControlValue: Date | undefined = maintItem.lastCompletedDate === 0 ? undefined : new Date(maintItem.lastCompletedDate);
-        const dueDateControlValue: Date | undefined = maintItem.dueDate === 0 ? undefined : new Date(maintItem.dueDate);
-        if (maintItem.sortOrder === -1) {
-          // This is a new item
-          // Calculate sortOrder based on category (items.length + 1 === new sort order)
-          maintItem.sortOrder = this.categories.find((cat: Category) => maintItem.category === cat.category)!.items!.length + 1;
+        if (!!maintItem) {
+          const dateControlValue: Date | undefined = maintItem.lastCompletedDate === 0 ? undefined : new Date(maintItem.lastCompletedDate);
+          const dueDateControlValue: Date | undefined = maintItem.dueDate === 0 ? undefined : new Date(maintItem.dueDate);
+          if (maintItem.sortOrder === -1) {
+            // This is a new item
+            // Calculate sortOrder based on category (items.length + 1 === new sort order)
+            maintItem.sortOrder = this.categories.find((cat: Category) => maintItem.category === cat.category)!.items!.length + 1;
 
-          this.maintItems.push(maintItem);
-          this.sortItemsIntoCategories();
+            this.maintItems.push(maintItem);
+            this.sortItemsIntoCategories();
 
-          // Create new controls in the form
-          this.mainForm!.addControl(`${maintItem.control}Date`, new FormControl(dateControlValue, null));
-          this.mainForm!.addControl(`${maintItem.control}DueDate`, new FormControl(dueDateControlValue, null));
-        } else {
-          // This is an existing item
-          // Update category.items here
-          let index = this.maintItems.findIndex((myItem: MaintenanceItem) => myItem.control === maintItem.control);
-          this.maintItems[index] = maintItem;
-          this.sortItemsIntoCategories();
+            // Create new controls in the form
+            this.maintForm!.addControl(`${maintItem.control}Date`, new FormControl(dateControlValue, null));
+            this.maintForm!.addControl(`${maintItem.control}DueDate`, new FormControl(dueDateControlValue, null));
+          } else {
+            // This is an existing item
+            // Update category.items here
+            let index = this.maintItems.findIndex((myItem: MaintenanceItem) => myItem.control === maintItem.control);
+            this.maintItems[index] = maintItem;
+            this.sortItemsIntoCategories();
 
-          // Update mainForm
-          this.mainForm!.controls[`${maintItem.control}Date`]!.setValue(dateControlValue);
-          this.mainForm!.controls[`${maintItem.control}DueDate`]!.setValue(dueDateControlValue);
+            // Update maintForm
+            this.maintForm!.controls[`${maintItem.control}Date`]!.setValue(dateControlValue);
+            this.maintForm!.controls[`${maintItem.control}DueDate`]!.setValue(dueDateControlValue);
+          }
         }
       }
     });
@@ -196,22 +198,18 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       accept: () => {
         this.subs.sink = this.maintenanceService.deleteMaintenanceItem(id).subscribe({
           next: () => {
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Item deleted successfully' });
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Task deleted successfully' });
             const deleteIndex = this.maintItems.findIndex((item: MaintenanceItem) => item.id === id);
             this.maintItems.splice(deleteIndex, 1);
             this.sortItemsIntoCategories();
           }, error: (err) => {
             console.error(err);
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete item' });
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
           }
         });
       },
       reject: () => { }
     });
-  }
-
-  identifyMaintItem(index: number, item: MaintenanceItem): string {
-    return `${item.control}-${item.notes}`;
   }
 
   private sortItemsIntoCategories(): void {
