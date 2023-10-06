@@ -10,3 +10,7 @@ export interface DropdownChangeEvent<T> {
   originalEvent: PointerEvent;
   value: T;
 }
+
+export interface ReactiveFormControls {
+  [x: string]: any;
+}

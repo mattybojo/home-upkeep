@@ -27,6 +27,16 @@ export class SidebarComponent implements OnInit {
       icon: 'fa-solid fa-clipboard-list fa-fw',
       routerLink: '/maintenance',
       command: closeSidebar
+    }, {
+      label: 'Recipe List',
+      icon: 'fa-regular fa-file-lines fa-fw',
+      routerLink: '/meals/recipes',
+      command: closeSidebar,
+    }, {
+      label: 'Meal Plan',
+      icon: 'fa-solid fa-utensils fa-fw',
+      routerLink: '/meals/plan',
+      command: closeSidebar,
     }];
   }
 }
