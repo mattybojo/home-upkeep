@@ -29,10 +29,6 @@ export interface MaintenanceSortOption {
   icon: string;
 }
 
-export interface ReactiveFormControls {
-  [x: string]: any;
-}
-
 export type ChecklistType = 'category' | 'date';
 export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet' | 'todo';
 
