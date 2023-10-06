@@ -24,7 +24,8 @@ export class MaintenanceService {
     maintItems.forEach((item: MaintenanceItem) => {
       if (!!item.id) {
         ref = doc(this.db, `maintenanceItems/${item.id}`);
-        batch.update(ref, { ...item, uid: this.authService.user!.uid });
+        const { id, ...restOfItem } = item;
+        batch.update(ref, { ...restOfItem, uid: this.authService.user!.uid });
       } else {
         ref = doc(collection(this.db, 'maintenanceItems'));
         const { id, ...restOfItem } = item;
