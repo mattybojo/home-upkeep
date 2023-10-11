@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { add, isBefore, isSameDay, set } from 'date-fns';
 import { filter, sortBy } from 'lodash';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -102,6 +102,14 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved all task data' });
         this.initialFormValues = this.maintForm!.value;
         this.maintForm!.reset(this.initialFormValues);
+        let control: AbstractControl<any, any> | null;
+        this.maintItems.forEach((item: MaintenanceItem) => {
+          control = this.maintForm!.get(`${item.control}Date`);
+          item.lastCompletedDate = !!control && !!control.value ? control.value.getTime() : 0;
+          control = this.maintForm!.get(`${item.control}DueDate`);
+          item.dueDate = !!control && !!control.value ? control.value.getTime() : 0;
+        });
+        this.sortItemsIntoCategories();
       },
       error: (err: any) => {
         console.error(err);
