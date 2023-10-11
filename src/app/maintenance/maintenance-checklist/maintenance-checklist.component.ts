@@ -255,6 +255,8 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     this.maintItems.forEach((item: MaintenanceItem) => {
       if (item.dueDate === 0) {
         categoryType = 'noDate';
+      } else if (isBefore(new Date(item.dueDate), today)) {
+        categoryType = 'pastDue';
       } else if (isSameDay(new Date(item.dueDate), today)) {
         categoryType = 'today';
       } else if (isBefore(new Date(item.dueDate), nextWeek)) {
