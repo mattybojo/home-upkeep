@@ -1,6 +1,7 @@
 import { SelectItem } from 'primeng/api/selectitem';
+import { UserDataPermission } from '../app.beans';
 
-export interface MaintenanceItem {
+export interface MaintenanceItem extends UserDataPermission {
   id?: string;
   category: CategoryType;
   label: string;

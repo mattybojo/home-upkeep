@@ -7,10 +7,12 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { forkJoin, take } from 'rxjs';
 import { SubSink } from 'subsink';
 import { ReactiveFormControls } from '../../app.beans';
+import { AuthService } from '../../auth/auth.service';
+import { newMeal, newRecipe } from '../meal-helpers';
 import { MealModalComponent } from '../meal-modal/meal-modal.component';
 import { Meal, MealPlannerData, Recipe } from '../meal.beans';
-import { MealService } from './../meal.service';
 import { RecipeModalComponent } from '../recipe-modal/recipe-modal.component';
+import { MealService } from './../meal.service';
 
 @Component({
   selector: 'app-meal-planner',
@@ -31,7 +33,7 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
   private subs = new SubSink();
 
   constructor(private mealService: MealService, private dialogService: DialogService,
-    private messageService: MessageService) { }
+    private messageService: MessageService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -44,8 +46,10 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
     });
     this.subs.sink = obsArray.subscribe({
       next: (data: MealPlannerData) => {
+        const sharedWith: string[] = this.authService.getSharedWith();
+
         this.recipes = sortBy(data.recipes, 'name');
-        this.recipes.splice(0, 0, { name: '', ingredients: '', instructions: '', timeRequired: '' }, { name: 'Restaurant/Doordash', ingredients: '', instructions: '', timeRequired: '' });
+        this.recipes.splice(0, 0, newRecipe(sharedWith), newRecipe(sharedWith, 'Restaurant/Doordash'));
 
         // Ensure 2 weeks of dates
         let meals: Meal[] = JSON.parse(JSON.stringify(data.meals));
@@ -76,7 +80,7 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
         dateRange.forEach((date: Date) => {
           foundIndex = meals.findIndex((meal: Meal) => meal.date === date.getTime());
           if (foundIndex === -1) {
-            meals.push({ recipes: [new Recipe()], date: date.getTime(), notes: '' });
+            meals.push(newMeal([newRecipe()], sharedWith, date, ''));
           }
         });
 
@@ -93,10 +97,11 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
   }
 
   addRecipe(meal: Meal) {
+    const sharedWith: string[] = this.authService.getSharedWith();
     const foundIndex = this.meals.findIndex((theMeal: Meal) => theMeal.date === meal.date);
     if (foundIndex > -1) {
-      this.mealForm!.addControl(`${meal.date}${meal.recipes.length}`, new FormControl(new Recipe(), null));
-      this.meals[foundIndex].recipes.push(new Recipe());
+      this.mealForm!.addControl(`${meal.date}${meal.recipes.length}`, new FormControl(newRecipe(sharedWith), null));
+      this.meals[foundIndex].recipes.push(newRecipe(sharedWith));
     }
   }
 
@@ -105,7 +110,7 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
       header: 'Add Recipe',
       maximizable: true,
       data: {
-        recipe: new Recipe(),
+        recipe: newRecipe(this.authService.getSharedWith()),
       }
     });
 

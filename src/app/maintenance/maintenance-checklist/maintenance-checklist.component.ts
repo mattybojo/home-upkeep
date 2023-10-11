@@ -7,6 +7,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { zip } from 'rxjs';
 import { SubSink } from 'subsink';
 import { DropdownChangeEvent, ReactiveFormControls } from '../../app.beans';
+import { AuthService } from '../../auth/auth.service';
 import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
 import { MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
@@ -45,7 +46,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   constructor(private maintenanceService: MaintenanceService,
     private messageService: MessageService, private dialogService: DialogService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -145,7 +146,8 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       label: '',
       lastCompletedDate: 0,
       notes: '',
-      sortOrder: -1
+      sortOrder: -1,
+      sharedWith: this.authService.getSharedWith()
     });
   }
 

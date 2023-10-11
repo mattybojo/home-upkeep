@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, WriteBatch, addDoc, collection, collectionData, deleteDoc, doc, setDoc, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, WriteBatch, addDoc, collection, collectionData, deleteDoc, doc, query, setDoc, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
-import { Meal, Recipe } from './meal.beans';
 import { AppService } from '../app.service';
+import { AuthService } from '../auth/auth.service';
+import { Meal, Recipe } from './meal.beans';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MealService {
 
-  constructor(private db: Firestore, private appService: AppService) { }
+  constructor(private db: Firestore, private appService: AppService, private authService: AuthService) { }
 
+  // TODO: Update with user permissions
   getRecipes(): Observable<Recipe[]> {
-    const recipeRef = collection(this.db, 'recipes');
+    const recipeRef = query(collection(this.db, 'recipes'), this.authService.whereCurrentUserIsAllowed);
     return collectionData(recipeRef, { idField: 'id' }) as Observable<Recipe[]>;
   }
 
@@ -28,6 +30,7 @@ export class MealService {
     return from(deleteDoc(doc(this.db, `recipes/${id}`)));
   }
 
+  // TODO: Update with user permissions
   getMeals(): Observable<Meal[]> {
     const mealRef = collection(this.db, 'meals');
     return collectionData(mealRef, { idField: 'id' }) as Observable<Meal[]>;

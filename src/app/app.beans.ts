@@ -14,3 +14,7 @@ export interface DropdownChangeEvent<T> {
 export interface ReactiveFormControls {
   [x: string]: any;
 }
+
+export interface UserDataPermission {
+  sharedWith: string[];
+}

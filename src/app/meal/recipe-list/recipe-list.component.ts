@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { sortBy } from 'lodash';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { take } from 'rxjs';
 import { SubSink } from 'subsink';
 import { DropdownChangeEvent } from '../../app.beans';
+import { AuthService } from '../../auth/auth.service';
 import { MaintenanceSortOption } from '../../maintenance/maintenance.beans';
+import { newRecipe } from '../meal-helpers';
 import { Recipe } from '../meal.beans';
 import { RecipeModalComponent } from '../recipe-modal/recipe-modal.component';
 import { MealService } from './../meal.service';
@@ -38,7 +39,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
 
   constructor(private mealService: MealService, private dialogService: DialogService,
     private messageService: MessageService, private confirmationService: ConfirmationService,
-    private cdr: ChangeDetectorRef) { }
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -60,12 +61,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   addNewRecipe(): void {
-    this.onClickEditItem({
-      name: '',
-      ingredients: '',
-      instructions: '',
-      timeRequired: ''
-    });
+    this.onClickEditItem(newRecipe(this.authService.getSharedWith()));
   }
 
   onClickEditItem(recipe: Recipe): void {

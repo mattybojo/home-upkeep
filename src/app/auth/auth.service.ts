@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
   Firestore,
-  collection, collectionData, doc, setDoc
+  QueryCompositeFilterConstraint,
+  QueryFieldFilterConstraint,
+  collection, collectionData, doc, or, setDoc, where
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { User } from '@firebase/auth-types';
+import { flatten } from 'lodash';
 import { BehaviorSubject, Observable, from } from 'rxjs';
+import { USER_GROUPS } from '../app.config';
 import { HomeUpkeepUser } from './auth.beans';
 
 @Injectable({
@@ -22,6 +26,10 @@ export class AuthService {
 
   isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  // Where clauses
+  whereOnlyCurrentUser!: QueryFieldFilterConstraint;
+  whereCurrentUserIsAllowed!: QueryCompositeFilterConstraint;
+
   constructor(private afAuth: AngularFireAuth, private router: Router,
     private db: Firestore) {
 
@@ -30,6 +38,8 @@ export class AuthService {
     if (localUser) {
       this._user = JSON.parse(localUser) as unknown as User;
       this.isLoggedIn$.next(true);
+      this.whereOnlyCurrentUser = where('uid', '==', this._user?.uid);
+      this.whereCurrentUserIsAllowed = or(this.whereOnlyCurrentUser, where('sharedWith', 'array-contains', this._user?.uid));
       isLoggedIn = true;
     }
 
@@ -63,6 +73,10 @@ export class AuthService {
 
   saveUser(user: User): Observable<void> {
     return from(setDoc(doc(this.db, `users/${user.uid}`), this.convertToFirestoreUser(user)));
+  }
+
+  getSharedWith(): string[] {
+    return flatten(USER_GROUPS.filter((val: string[]) => val.includes(this._user!.uid)));
   }
 
   private convertToFirestoreUser(user: User): HomeUpkeepUser {
