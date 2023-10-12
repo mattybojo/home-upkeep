@@ -12,7 +12,6 @@ export class MealService {
 
   constructor(private db: Firestore, private appService: AppService, private authService: AuthService) { }
 
-  // TODO: Update with user permissions
   getRecipes(): Observable<Recipe[]> {
     const recipeRef = query(collection(this.db, 'recipes'), this.authService.whereCurrentUserIsAllowed);
     return collectionData(recipeRef, { idField: 'id' }) as Observable<Recipe[]>;
@@ -30,7 +29,6 @@ export class MealService {
     return from(deleteDoc(doc(this.db, `recipes/${id}`)));
   }
 
-  // TODO: Update with user permissions
   getMeals(): Observable<Meal[]> {
     const mealRef = collection(this.db, 'meals');
     return collectionData(mealRef, { idField: 'id' }) as Observable<Meal[]>;
