@@ -12,6 +12,7 @@ export class AppComponent {
 
   authOptions: AuthDropdownOption[] | undefined;
   isSidebarVisible: boolean = false;
+  isAllowedUser: boolean = false;
 
   loggedInAuthOptions: AuthDropdownOption[] = [{
     label: 'Profile',
@@ -36,6 +37,9 @@ export class AppComponent {
 
   constructor(private authService: AuthService) {
     this.authService.isLoggedIn$.subscribe((isLoggedIn: boolean) => {
+      if (this.authService.getSharedWith().length > 0) {
+        this.isAllowedUser = true;
+      }
       this.setAuthOptions(isLoggedIn);
     });
   }

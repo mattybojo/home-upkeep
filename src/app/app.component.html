@@ -33,9 +33,14 @@
     </ng-template>
   </p-menubar>
 </div>
-<div class="router-outlet-container">
+<div class="router-outlet-container" *ngIf="isAllowedUser; else unallowedUser">
   <router-outlet></router-outlet>
 </div>
+<ng-template #unallowedUser>
+  <h4 class="text-center">
+    You are not allowed access to Home Upkeep. Contact the admin for access.
+  </h4>
+</ng-template>
 
 <p-sidebar [(visible)]="isSidebarVisible" position="left">
   <app-sidebar (onCloseSidebar)="closeSidebar()"></app-sidebar>
