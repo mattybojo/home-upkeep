@@ -32,6 +32,7 @@ export interface MaintenanceSortOption {
 
 export type ChecklistType = 'category' | 'date';
 export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet' | 'todo';
+export type AccordionAction = 'collapse' | 'expand';
 
 export const getCategoryTypes = (): SelectItem[] => {
   return [{

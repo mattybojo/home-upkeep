@@ -9,7 +9,7 @@ import { SubSink } from 'subsink';
 import { DropdownChangeEvent, ReactiveFormControls } from '../../app.beans';
 import { AuthService } from '../../auth/auth.service';
 import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
-import { MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
+import { AccordionAction, MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
 import { Category } from './../maintenance.beans';
@@ -281,6 +281,11 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
         category.filteredItems = sortBy(category.filteredItems, 'dueDate');
       }
     });
+  }
+
+  onAccordionAction(action: AccordionAction): void {
+    this.categories.forEach((cate: Category) => cate.isExpanded = (action === 'expand'));
+    this.dateCategories.forEach((cate: Category) => cate.isExpanded = (action === 'expand'));
   }
 
   private prepareFormControls(items: MaintenanceItem[]): ReactiveFormControls {

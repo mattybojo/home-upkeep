@@ -24,6 +24,16 @@
         icon="fa-fw fa-solid fa-rotate"
         (onClick)="resetForm()"
       ></p-button>
+      <p-button
+        styleClass="p-button-raised p-button-warning mb-2 mr-1"
+        icon="fa-fw fa-solid fa-folder-plus"
+        (onClick)="onAccordionAction('expand')"
+      ></p-button>
+      <p-button
+        styleClass="p-button-raised p-button-warning mb-2 mr-1"
+        icon="fa-fw fa-solid fa-folder-minus"
+        (onClick)="onAccordionAction('collapse')"
+      ></p-button>
       <p-dropdown
         [options]="sortOptions"
         optionLabel="label"
