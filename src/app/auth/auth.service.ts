@@ -37,10 +37,10 @@ export class AuthService {
     let isLoggedIn: boolean = false;
     if (localUser) {
       this._user = JSON.parse(localUser) as unknown as User;
+      isLoggedIn = true;
       this.isLoggedIn$.next(true);
       this.whereOnlyCurrentUser = where('uid', '==', this._user?.uid);
       this.whereCurrentUserIsAllowed = or(this.whereOnlyCurrentUser, where('sharedWith', 'array-contains', this._user?.uid));
-      isLoggedIn = true;
     }
 
     this.afAuth.authState.subscribe((user: User | null) => {
