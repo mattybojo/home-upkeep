@@ -35,9 +35,9 @@ export class AppComponent {
     url: '/auth/login'
   }];
 
-  constructor(private authService: AuthService) {
+  constructor(protected authService: AuthService) {
     this.authService.isLoggedIn$.subscribe((isLoggedIn: boolean) => {
-      if (this.authService.getSharedWith().length > 0) {
+      if (isLoggedIn && this.authService.getSharedWith().length > 0) {
         this.isAllowedUser = true;
       }
       this.setAuthOptions(isLoggedIn);

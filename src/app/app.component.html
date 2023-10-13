@@ -33,7 +33,13 @@
     </ng-template>
   </p-menubar>
 </div>
-<div class="router-outlet-container" *ngIf="isAllowedUser; else unallowedUser">
+<div
+  class="router-outlet-container"
+  *ngIf="
+    (this.authService.user && isAllowedUser) || !this.authService.user;
+    else unallowedUser
+  "
+>
   <router-outlet></router-outlet>
 </div>
 <ng-template #unallowedUser>
