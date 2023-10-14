@@ -19,9 +19,9 @@ export class MaintenanceService {
 
   saveMaintenanceItem(maintItem: MaintenanceItem): Observable<DocumentReference<DocumentData> | void> {
     if (!!maintItem.id) {
-      return from(setDoc(doc(this.db, `recipes/${maintItem.id}`), maintItem));
+      return from(setDoc(doc(this.db, `maintenanceItems/${maintItem.id}`), maintItem));
     } else {
-      return from(addDoc(collection(this.db, 'recipes'), maintItem));
+      return from(addDoc(collection(this.db, 'maintenanceItems'), maintItem));
     }
   }
 
