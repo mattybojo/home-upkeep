@@ -20,6 +20,8 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
   item!: MaintenanceItem;
   categories!: Category[];
 
+  isError: boolean = false;
+
   modalForm: FormGroup | undefined;
   categoryOptions: SelectItem[] = getCategoryTypes();
   public Editor = ClassicEditor;
@@ -70,6 +72,10 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         console.error(err);
+        this.isError = true;
+        setTimeout(() => {
+          this.isError = false;
+        }, 1500);
       }
     });
   }
