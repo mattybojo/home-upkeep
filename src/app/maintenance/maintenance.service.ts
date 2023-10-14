@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, WriteBatch, and, collection, collectionData, deleteDoc, doc, or, query, where, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, WriteBatch, addDoc, and, collection, collectionData, deleteDoc, doc, or, query, setDoc, where, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
 import { Category, MaintenanceItem } from './maintenance.beans';
@@ -15,6 +15,14 @@ export class MaintenanceService {
     const maintItemsRef = query(collection(this.db, 'maintenanceItems'), or(and(where('category', '!=', 'personal'), this.authService.whereCurrentUserIsAllowed),
       and(where('category', '==', 'personal'), this.authService.whereOnlyCurrentUser)));
     return collectionData(maintItemsRef, { idField: 'id' }) as Observable<MaintenanceItem[]>;
+  }
+
+  saveMaintenanceItem(maintItem: MaintenanceItem): Observable<DocumentReference<DocumentData> | void> {
+    if (!!maintItem.id) {
+      return from(setDoc(doc(this.db, `recipes/${maintItem.id}`), maintItem));
+    } else {
+      return from(addDoc(collection(this.db, 'recipes'), maintItem));
+    }
   }
 
   saveMaintenanceItems(maintItems: MaintenanceItem[]): Observable<void> {

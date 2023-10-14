@@ -165,19 +165,21 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       maximizable: true,
       data: {
         item: item,
+        categories: this.categories
       }
     });
 
     this.subs.sink = this.ref.onClose.subscribe({
       next: (maintItem: MaintenanceItem) => {
         if (!!maintItem) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved task data' });
+
           const dateControlValue: Date | undefined = maintItem.lastCompletedDate === 0 ? undefined : new Date(maintItem.lastCompletedDate);
           const dueDateControlValue: Date | undefined = maintItem.dueDate === 0 ? undefined : new Date(maintItem.dueDate);
-          if (maintItem.sortOrder === -1) {
-            // This is a new item
-            // Calculate sortOrder based on category (items.length + 1 === new sort order)
-            maintItem.sortOrder = this.categories.find((cat: Category) => maintItem.category === cat.category)!.items!.length + 1;
 
+          const foundIndex = this.maintItems.findIndex((element: MaintenanceItem) => element.id === maintItem.id);
+          if (foundIndex === -1) {
+            // This is a new item
             this.maintItems.push(maintItem);
             this.sortItemsIntoCategories();
 
@@ -187,8 +189,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           } else {
             // This is an existing item
             // Update category.items here
-            let index = this.maintItems.findIndex((myItem: MaintenanceItem) => myItem.control === maintItem.control);
-            this.maintItems[index] = maintItem;
+            this.maintItems[foundIndex] = maintItem;
             this.sortItemsIntoCategories();
 
             // Update maintForm

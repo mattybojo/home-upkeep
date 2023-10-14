@@ -1,31 +1,39 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { camelCase } from 'lodash';
 import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MaintenanceItem, getCategoryTypes } from '../maintenance.beans';
+import { SubSink } from 'subsink';
+import { Category, MaintenanceItem, getCategoryTypes } from '../maintenance.beans';
+import { MaintenanceService } from '../maintenance.service';
 
 @Component({
   selector: 'app-maintenance-item-modal',
   templateUrl: './maintenance-item-modal.component.html',
-  styleUrls: ['./maintenance-item-modal.component.scss']
+  styleUrls: ['./maintenance-item-modal.component.scss'],
 })
-export class MaintenanceItemModalComponent implements OnInit {
+export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
 
-  item: MaintenanceItem | undefined;
+  item!: MaintenanceItem;
+  categories!: Category[];
 
   modalForm: FormGroup | undefined;
   categoryOptions: SelectItem[] = getCategoryTypes();
   public Editor = ClassicEditor;
 
+  private subs = new SubSink();
+
   @ViewChild('ckNotes') ckNotes!: CKEditorComponent;
 
-  constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig) { }
+  constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
+    private maintenanceService: MaintenanceService) { }
 
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
+    this.categories = this.config.data.categories;
 
     this.modalForm = new FormGroup({
       control: new FormControl(this.item!.control, null),
@@ -49,6 +57,24 @@ export class MaintenanceItemModalComponent implements OnInit {
       this.modalForm!.get('control')!.setValue(camelCase(this.modalForm!.get('label')!.value));
     }
 
-    this.ref.close(Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate }));
+    const item: MaintenanceItem = Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate });
+    // Calculate sortOrder based on category (items.length + 1 === new sort order)
+    item.sortOrder = this.categories.find((cat: Category) => item.category === cat.category)!.items!.length + 1;
+
+    this.maintenanceService.saveMaintenanceItem(item).subscribe({
+      next: (resp: DocumentReference<DocumentData> | void) => {
+        if (resp?.id) {
+          item.id = resp.id;
+        }
+        this.ref.close(item);
+      },
+      error: (err: any) => {
+        console.error(err);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 }
