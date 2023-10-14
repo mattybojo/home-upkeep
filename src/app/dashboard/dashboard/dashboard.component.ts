@@ -1,31 +1,44 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SubSink } from 'subsink';
-import { MaintenanceService } from '../../maintenance/maintenance.service';
-import { MaintenanceItem } from '../../maintenance/maintenance.beans';
 import { add, format, isAfter, isBefore, isSameDay, set } from 'date-fns';
-import { Message } from 'primeng/api/message';
 import { sortBy } from 'lodash';
+import { MessageService } from 'primeng/api';
+import { Message } from 'primeng/api/message';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { SubSink } from 'subsink';
+import { MaintenanceItemModalComponent } from '../../maintenance/maintenance-item-modal/maintenance-item-modal.component';
+import { MaintenanceItem } from '../../maintenance/maintenance.beans';
+import { MaintenanceService } from '../../maintenance/maintenance.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  providers: [DialogService, MessageService]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
   isExpanded: boolean = true;
   pastDueTasksMessages: Message[] = [];
   upcomingTasksMessages: Message[] = [];
+  maintItems: MaintenanceItem[] = []
   pastDueTasks: MaintenanceItem[] = [];
   upcomingTasks: MaintenanceItem[] = [];
 
+  ref: DynamicDialogRef | undefined;
+
   private subs = new SubSink();
 
-  constructor(private maintenanceService: MaintenanceService) { }
+  constructor(private maintenanceService: MaintenanceService, private dialogService: DialogService,
+    private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.loadMaintenanceItems();
+  }
+
+  loadMaintenanceItems(): void {
     this.subs.sink = this.maintenanceService.getMaintenanceItems().subscribe({
       next: (maintItems: MaintenanceItem[]) => {
+        this.maintItems = maintItems;
         this.pastDueTasksMessages = [];
         this.upcomingTasksMessages = [];
         const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
@@ -46,6 +59,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.upcomingTasksMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There ${this.upcomingTasks.length === 1 ? 'is' : 'are'} currently ${this.upcomingTasks.length} tasks with due dates this next week.` });
       },
       error: (err) => console.error(err)
+    });
+  }
+
+  editMaintenanceItem(item: MaintenanceItem): void {
+    this.ref = this.dialogService.open(MaintenanceItemModalComponent, {
+      header: item.label,
+      maximizable: true,
+      data: {
+        item: item,
+        maintItems: this.maintItems
+      }
+    });
+
+    this.subs.sink = this.ref.onClose.subscribe({
+      next: (maintItem: MaintenanceItem) => {
+        if (!!maintItem) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Updated task data' });
+          this.loadMaintenanceItems();
+        }
+      }
     });
   }
 
