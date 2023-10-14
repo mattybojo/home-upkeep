@@ -165,7 +165,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       maximizable: true,
       data: {
         item: item,
-        categories: this.categories
+        maintItems: this.maintItems
       }
     });
 

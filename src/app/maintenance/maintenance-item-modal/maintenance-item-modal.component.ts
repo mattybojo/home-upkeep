@@ -7,8 +7,9 @@ import { camelCase } from 'lodash';
 import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
-import { Category, MaintenanceItem, getCategoryTypes } from '../maintenance.beans';
+import { getCategoryTypes } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
+import { MaintenanceItem } from './../maintenance.beans';
 
 @Component({
   selector: 'app-maintenance-item-modal',
@@ -18,7 +19,7 @@ import { MaintenanceService } from '../maintenance.service';
 export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
 
   item!: MaintenanceItem;
-  categories!: Category[];
+  maintItems!: MaintenanceItem[];
 
   isError: boolean = false;
 
@@ -35,7 +36,7 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
-    this.categories = this.config.data.categories;
+    this.maintItems = this.config.data.maintItems;
 
     this.modalForm = new FormGroup({
       control: new FormControl(this.item!.control, null),
@@ -60,8 +61,10 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
     }
 
     const item: MaintenanceItem = Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate });
-    // Calculate sortOrder based on category (items.length + 1 === new sort order)
-    item.sortOrder = this.categories.find((cat: Category) => item.category === cat.category)!.items!.length + 1;
+    // Calculate sortOrder based on how many maintenance items are currently in the category
+    if (item.sortOrder === -1) {
+      item.sortOrder = this.maintItems.filter((arrayItem: MaintenanceItem) => arrayItem.category === item.category).length + 1;
+    }
 
     this.maintenanceService.saveMaintenanceItem(item).subscribe({
       next: (resp: DocumentReference<DocumentData> | void) => {
