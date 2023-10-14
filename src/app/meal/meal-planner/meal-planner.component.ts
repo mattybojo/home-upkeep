@@ -158,7 +158,6 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
   onClickDeleteItem(meal: Meal, index: number): void {
     const foundIndex = this.meals.findIndex((theMeal: Meal) => theMeal.date === meal.date);
     if (foundIndex > -1) {
-      // TODO: Check for additional controls to change (controls of format `${meal.date}${index+1}` with index increasing until mealForm.get() returns null)
       index++;
       let control = this.mealForm!.get(`${meal.date}${index}`);
       while (control != null) {

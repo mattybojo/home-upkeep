@@ -76,15 +76,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
     this.subs.sink = this.ref.onClose.subscribe({
       next: (recipe: Recipe) => {
         if (!!recipe) {
-          this.subs.sink = this.mealService.saveRecipe(recipe).subscribe({
-            next: () => {
-              this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved recipe' });
-            },
-            error: (err: any) => {
-              console.error(err);
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to save recipe' });
-            }
-          });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved recipe' });
         }
       }
     });

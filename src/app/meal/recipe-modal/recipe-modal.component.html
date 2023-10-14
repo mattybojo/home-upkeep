@@ -64,10 +64,13 @@
     />
   </div>
   <hr />
-  <p-button
-    label="Confirm"
-    styleClass="p-button-raised p-button-primary"
-    (onClick)="updateItem()"
-    [disabled]="modalForm.invalid"
-  ></p-button>
+  <div class="flex flex-row align-items-center">
+    <p-button
+      label="Save"
+      styleClass="p-button-raised p-button-primary"
+      (onClick)="updateItem()"
+      [disabled]="modalForm.invalid"
+    ></p-button>
+    <p class="text-red-500 ml-2" *ngIf="isError">Unable to save, try again</p>
+  </div>
 </form>
