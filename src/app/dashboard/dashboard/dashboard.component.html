@@ -48,7 +48,11 @@
       <ng-template pTemplate="body" let-task>
         <tr>
           <td>
-            <a (click)="editMaintenanceItem(task)">{{ task.label }}</a>
+            <a
+              class="cursor-pointer text-primary"
+              (click)="editMaintenanceItem(task)"
+              >{{ task.label }}</a
+            >
           </td>
           <td>{{ task.dueDateString }}</td>
         </tr>

@@ -47,6 +47,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.pastDueTasks.length > 0) {
           pastDueSeverity = 'error';
         }
+        this.pastDueTasks.forEach((task: MaintenanceItem) => {
+          task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
+        });
         this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your checklist.` });
 
         const nextWeek: Date = add(today, { days: 7 });
