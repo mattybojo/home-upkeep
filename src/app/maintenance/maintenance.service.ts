@@ -12,8 +12,7 @@ export class MaintenanceService {
   constructor(private db: Firestore, private authService: AuthService) { }
 
   getMaintenanceItems(): Observable<MaintenanceItem[]> {
-    const maintItemsRef = query(collection(this.db, 'maintenanceItems'), or(and(where('category', '!=', 'personal'), this.authService.whereCurrentUserIsAllowed),
-      and(where('category', '==', 'personal'), this.authService.whereOnlyCurrentUser)));
+    const maintItemsRef = query(collection(this.db, 'maintenanceItems'), this.authService.whereSharedWithCurrentUser);
     return collectionData(maintItemsRef, { idField: 'id' }) as Observable<MaintenanceItem[]>;
   }
 

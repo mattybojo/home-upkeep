@@ -27,7 +27,8 @@ export class AuthService {
   isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   // Where clauses
-  whereOnlyCurrentUser!: QueryFieldFilterConstraint;
+  whereCurrentUserIsOwner!: QueryFieldFilterConstraint;
+  whereSharedWithCurrentUser!: QueryFieldFilterConstraint;
   whereCurrentUserIsAllowed!: QueryCompositeFilterConstraint;
 
   constructor(private afAuth: AngularFireAuth, private router: Router,
@@ -39,8 +40,9 @@ export class AuthService {
       this._user = JSON.parse(localUser) as unknown as User;
       isLoggedIn = true;
       this.isLoggedIn$.next(true);
-      this.whereOnlyCurrentUser = where('uid', '==', this._user?.uid);
-      this.whereCurrentUserIsAllowed = or(this.whereOnlyCurrentUser, where('sharedWith', 'array-contains', this._user?.uid));
+      this.whereCurrentUserIsOwner = where('uid', '==', this._user?.uid);
+      this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user?.uid)
+      this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
     }
 
     this.afAuth.authState.subscribe((user: User | null) => {

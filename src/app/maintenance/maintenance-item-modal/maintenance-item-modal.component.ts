@@ -7,6 +7,7 @@ import { camelCase } from 'lodash';
 import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
+import { AuthService } from '../../auth/auth.service';
 import { getCategoryTypes } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { MaintenanceItem } from './../maintenance.beans';
@@ -32,7 +33,7 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
   @ViewChild('ckNotes') ckNotes!: CKEditorComponent;
 
   constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
-    private maintenanceService: MaintenanceService) { }
+    private maintenanceService: MaintenanceService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
@@ -65,6 +66,8 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
     if (item.sortOrder === -1) {
       item.sortOrder = this.maintItems.filter((arrayItem: MaintenanceItem) => arrayItem.category === item.category).length + 1;
     }
+
+    item.sharedWith = item.category !== 'personal' ? this.authService.getSharedWith() : [this.authService.user!.uid];
 
     this.maintenanceService.saveMaintenanceItem(item).subscribe({
       next: (resp: DocumentReference<DocumentData> | void) => {

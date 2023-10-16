@@ -9,10 +9,9 @@ import { SubSink } from 'subsink';
 import { DropdownChangeEvent, ReactiveFormControls } from '../../app.beans';
 import { AuthService } from '../../auth/auth.service';
 import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
-import { AccordionAction, MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
+import { AccordionAction, Category, MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
-import { Category } from './../maintenance.beans';
 
 @Component({
   selector: 'app-maintenance-checklist',
@@ -155,7 +154,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       lastCompletedDate: 0,
       notes: '',
       sortOrder: -1,
-      sharedWith: this.authService.getSharedWith()
+      sharedWith: []
     });
   }
 
