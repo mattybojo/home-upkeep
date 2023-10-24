@@ -3,17 +3,23 @@
     <p-button
       styleClass="p-button-raised p-button-success mr-1"
       icon="fa-fw fa-solid fa-plus"
+      pTooltip="Add a new recipe"
+      tooltipPosition="top"
       (onClick)="createNewRecipe()"
     ></p-button>
     <p-button
       styleClass="p-button-raised p-button-secondary mr-1"
       [icon]="'fa-fw fa-solid ' + (isViewMode ? 'fa-pen-to-square' : 'fa-eye')"
+      pTooltip="Show/hide edit and delete buttons"
+      tooltipPosition="top"
       (onClick)="isViewMode = !isViewMode"
     ></p-button>
     <p-button
       styleClass="p-button-raised p-button-primary"
       icon="fa-fw fa-solid fa-floppy-disk"
       type="submit"
+      pTooltip="Save all meals"
+      tooltipPosition="top"
       [disabled]="mealForm.invalid"
     ></p-button>
   </div>

@@ -9,6 +9,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { ScrollerModule } from 'primeng/scroller';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 import { MealModalComponent } from './meal-modal/meal-modal.component';
 import { MealPlannerComponent } from './meal-planner/meal-planner.component';
 import { MealRoutingModule } from './meal-routing.module';
@@ -38,6 +39,7 @@ import { DateAvatarComponent } from './shared/date-avatar/date-avatar.component'
     InputTextModule,
     ConfirmPopupModule,
     DataViewModule,
+    TooltipModule
   ]
 })
 export class MealModule { }

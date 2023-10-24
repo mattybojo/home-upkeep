@@ -4,11 +4,15 @@
       <p-button
         styleClass="p-button-raised p-button-success mb-2 mr-1"
         icon="fa-fw fa-solid fa-circle-plus"
+        pTooltip="Add a new category"
+        tooltipPosition="top"
         (onClick)="addNewCategory()"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-success mb-2 mr-1"
         icon="fa-fw fa-solid fa-plus"
+        pTooltip="Add a new task"
+        tooltipPosition="top"
         (onClick)="addNewMaintenanceItem()"
       ></p-button>
       <p-button
@@ -16,27 +20,37 @@
         [icon]="
           'fa-fw fa-solid ' + (isViewMode ? 'fa-pen-to-square' : 'fa-eye')
         "
+        pTooltip="Show/hide edit and delete buttons"
+        tooltipPosition="top"
         (onClick)="isViewMode = !isViewMode"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-primary mb-2 mr-1"
         icon="fa-fw fa-solid fa-floppy-disk"
         type="submit"
+        pTooltip="Save all tasks"
+        tooltipPosition="top"
         [disabled]="maintForm.invalid"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-help mb-2 mr-1"
         icon="fa-fw fa-solid fa-rotate"
+        pTooltip="Undo all unsaved edits"
+        tooltipPosition="top"
         (onClick)="resetForm()"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-warning mb-2 mr-1"
         icon="fa-fw fa-solid fa-folder-plus"
+        pTooltip="Expand all categories"
+        tooltipPosition="top"
         (onClick)="onAccordionAction('expand')"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-warning mb-2 mr-1"
         icon="fa-fw fa-solid fa-folder-minus"
+        pTooltip="Collapse all categories"
+        tooltipPosition="top"
         (onClick)="onAccordionAction('collapse')"
       ></p-button>
       <p-dropdown
