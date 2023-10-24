@@ -8,10 +8,13 @@
     <p-table [value]="pastDueTasks" *ngIf="pastDueTasks.length > 0">
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="label">
+          <th style="width: 50%" pSortableColumn="label">
             Task <p-sortIcon field="label"></p-sortIcon>
           </th>
-          <th pSortableColumn="dueDate">
+          <th style="width: 25%" pSortableColumn="category">
+            Category <p-sortIcon field="category"></p-sortIcon>
+          </th>
+          <th style="width: 25%" pSortableColumn="dueDate">
             Due Date <p-sortIcon field="dueDate"></p-sortIcon>
           </th>
         </tr>
@@ -25,6 +28,7 @@
               >{{ task.label }}</a
             >
           </td>
+          <td>{{ task.categoryLabel }}</td>
           <td>{{ task.dueDateString }}</td>
         </tr>
       </ng-template>
@@ -37,10 +41,13 @@
     <p-table [value]="upcomingTasks" *ngIf="upcomingTasks.length > 0">
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="label">
+          <th style="width: 50%" pSortableColumn="label">
             Task <p-sortIcon field="label"></p-sortIcon>
           </th>
-          <th pSortableColumn="dueDate">
+          <th style="width: 25%" pSortableColumn="category">
+            Category <p-sortIcon field="category"></p-sortIcon>
+          </th>
+          <th style="width: 25%" pSortableColumn="dueDate">
             Due Date <p-sortIcon field="dueDate"></p-sortIcon>
           </th>
         </tr>
@@ -54,6 +61,7 @@
               >{{ task.label }}</a
             >
           </td>
+          <td>{{ task.categoryLabel }}</td>
           <td>{{ task.dueDateString }}</td>
         </tr>
       </ng-template>

@@ -1,4 +1,3 @@
-import { SelectItem } from 'primeng/api/selectitem';
 import { UserDataPermission } from '../app.beans';
 
 export interface MaintenanceItem extends UserDataPermission {
@@ -12,6 +11,7 @@ export interface MaintenanceItem extends UserDataPermission {
   notes: string;
   dueDateString?: string;
   uid?: string;
+  categoryLabel?: string;
 }
 
 export interface Category extends UserDataPermission {

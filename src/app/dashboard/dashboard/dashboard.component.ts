@@ -6,8 +6,9 @@ import { Message } from 'primeng/api/message';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
 import { MaintenanceItemModalComponent } from '../../maintenance/maintenance-item-modal/maintenance-item-modal.component';
-import { MaintenanceItem } from '../../maintenance/maintenance.beans';
+import { Category, MaintenanceItem } from '../../maintenance/maintenance.beans';
 import { MaintenanceService } from '../../maintenance/maintenance.service';
+import { zip } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,8 +37,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadMaintenanceItems(): void {
-    this.subs.sink = this.maintenanceService.getMaintenanceItems().subscribe({
-      next: (maintItems: MaintenanceItem[]) => {
+    this.subs.sink = zip(
+      this.maintenanceService.getCategories(),
+      this.maintenanceService.getMaintenanceItems()
+    ).subscribe({
+      next: ([categories, maintItems]) => {
         this.maintItems = maintItems;
         this.pastDueTasksMessages = [];
         this.upcomingTasksMessages = [];
@@ -47,8 +51,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.pastDueTasks.length > 0) {
           pastDueSeverity = 'error';
         }
+        let foundIndex: number;
         this.pastDueTasks.forEach((task: MaintenanceItem) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
+          foundIndex = categories.findIndex((cat: Category) => cat.category === task.category);
+          task.categoryLabel = !!categories[foundIndex] ? categories[foundIndex].label : 'Unassigned';
         });
         this.pastDueTasks = sortBy(this.pastDueTasks, ['dueDate', 'label']);
         this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your checklist.` });
@@ -58,6 +65,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           && !isSameDay(item.dueDate, item.lastCompletedDate) && !isBefore(new Date(item.dueDate), today));
         this.upcomingTasks.forEach((task: MaintenanceItem) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
+          foundIndex = categories.findIndex((cat: Category) => cat.category === task.category);
+          task.categoryLabel = !!categories[foundIndex] ? categories[foundIndex].label : 'Unassigned';
         });
         this.upcomingTasks = sortBy(this.upcomingTasks, ['dueDate', 'label']);
         this.upcomingTasksMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There ${this.upcomingTasks.length === 1 ? 'is' : 'are'} currently ${this.upcomingTasks.length} tasks with due dates this next week.` });
