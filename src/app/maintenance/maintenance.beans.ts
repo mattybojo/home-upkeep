@@ -3,7 +3,7 @@ import { UserDataPermission } from '../app.beans';
 
 export interface MaintenanceItem extends UserDataPermission {
   id?: string;
-  category: CategoryType;
+  category: string;
   label: string;
   control: string;
   lastCompletedDate: number;
@@ -14,7 +14,7 @@ export interface MaintenanceItem extends UserDataPermission {
   uid?: string;
 }
 
-export interface Category {
+export interface Category extends UserDataPermission {
   id?: string;
   label: string;
   category: string;
@@ -31,42 +31,4 @@ export interface MaintenanceSortOption {
 }
 
 export type ChecklistType = 'category' | 'date';
-export type CategoryType = 'backyard' | 'bedroom' | 'car' | 'frontYard' | 'garage' | 'general' | 'guestRoom' | 'kitchen' | 'personal' | 'pet' | 'todo';
 export type AccordionAction = 'collapse' | 'expand';
-
-export const getCategoryTypes = (): SelectItem[] => {
-  return [{
-    label: 'Backyard',
-    value: 'backyard'
-  }, {
-    label: 'Bedroom',
-    value: 'bedroom'
-  }, {
-    label: 'Car',
-    value: 'car'
-  }, {
-    label: 'Front Yard',
-    value: 'frontYard'
-  }, {
-    label: 'Garage',
-    value: 'garage'
-  }, {
-    label: 'General Housekeeping',
-    value: 'general'
-  }, {
-    label: 'Guest Room',
-    value: 'guestRoom'
-  }, {
-    label: 'Kitchen',
-    value: 'kitchen'
-  }, {
-    label: 'Personal',
-    value: 'personal'
-  }, {
-    label: 'Pet',
-    value: 'pet'
-  }, {
-    label: 'Todo Item',
-    value: 'todo'
-  }];
-}

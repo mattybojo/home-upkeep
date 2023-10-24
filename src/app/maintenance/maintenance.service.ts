@@ -47,8 +47,16 @@ export class MaintenanceService {
   }
 
   getCategories(): Observable<Category[]> {
-    const categoriesRef = collection(this.db, 'categories');
+    const categoriesRef = query(collection(this.db, 'categories'), this.authService.whereSharedWithCurrentUser);
     return collectionData(categoriesRef, { idField: 'id' }) as Observable<Category[]>;
+  }
+
+  saveCategory(category: Category): Observable<DocumentReference<DocumentData> | void> {
+    if (!!category.id) {
+      return from(setDoc(doc(this.db, `categories/${category.id}`), category));
+    } else {
+      return from(addDoc(collection(this.db, 'categories'), category));
+    }
   }
 
   saveCategories(categories: Category[]): Observable<void> {
@@ -57,14 +65,19 @@ export class MaintenanceService {
     categories.forEach((category: Category) => {
       if (!!category.id) {
         ref = doc(this.db, `categories/${category.id}`);
-        batch.update(ref, { ...category });
+        const { id, items, filteredItems, isExpanded, ...restOfItem } = category;
+        batch.update(ref, { ...restOfItem });
       } else {
         ref = doc(collection(this.db, 'categories'));
-        const { id, ...restOfItem } = category;
+        const { id, items, filteredItems, isExpanded, ...restOfItem } = category;
         batch.set(ref, restOfItem);
       }
     });
 
     return from(batch.commit());
+  }
+
+  deleteCategory(id: string): Observable<void> {
+    return from(deleteDoc(doc(this.db, `categories/${id}`)));
   }
 }

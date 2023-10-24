@@ -2,12 +2,10 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { getCategoryTypes } from '../../maintenance/maintenance.beans';
+import { SubSink } from 'subsink';
 import { Recipe } from '../meal.beans';
 import { MealService } from '../meal.service';
-import { SubSink } from 'subsink';
 
 @Component({
   selector: 'app-recipe-modal',
@@ -22,7 +20,6 @@ export class RecipeModalComponent implements OnInit, OnDestroy {
   isError: boolean = false;
 
   modalForm: FormGroup | undefined;
-  categoryOptions: SelectItem[] = getCategoryTypes();
   public Editor = ClassicEditor;
 
   private subs = new SubSink();

@@ -3,6 +3,11 @@
     <div class="col-12 flex justify-content-end">
       <p-button
         styleClass="p-button-raised p-button-success mb-2 mr-1"
+        icon="fa-fw fa-solid fa-circle-plus"
+        (onClick)="addNewCategory()"
+      ></p-button>
+      <p-button
+        styleClass="p-button-raised p-button-success mb-2 mr-1"
         icon="fa-fw fa-solid fa-plus"
         (onClick)="addNewMaintenanceItem()"
       ></p-button>
@@ -78,10 +83,33 @@
   </div>
   <p-accordion [multiple]="true">
     <p-accordionTab
-      [header]="category.label"
       [selected]="category.isExpanded"
       *ngFor="let category of selectedCategories"
     >
+      <ng-template pTemplate="header">
+        <ng-container
+          *ngIf="
+            selectedCategories === categories &&
+            !['personal', 'unassigned'].includes(category.category)
+          "
+        >
+          <p-button
+            styleClass="p-button-raised p-button-primary mr-1 ml-1"
+            icon="fa-fw fa-solid fa-pen-to-square"
+            (onClick)="onClickEditCategory($event, category)"
+            size="small"
+            *ngIf="!isViewMode"
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-danger mr-1"
+            icon="fa-fw fa-solid fa-trash"
+            (onClick)="onClickDeleteCategory($event, category.id!)"
+            size="small"
+            *ngIf="!isViewMode"
+          ></p-button>
+        </ng-container>
+        <span class="p-accordion-header-text">{{ category.label }}</span>
+      </ng-template>
       <ng-container
         *ngTemplateOutlet="tasks; context: { items: category.filteredItems }"
       ></ng-container>
@@ -112,12 +140,14 @@
               <p-button
                 styleClass="p-button-raised p-button-primary mr-1"
                 icon="fa-fw fa-solid fa-pen-to-square"
+                size="small"
                 (onClick)="onClickEditItem(item)"
                 *ngIf="!isViewMode"
               ></p-button>
               <p-button
                 styleClass="p-button-raised p-button-danger mr-1"
                 icon="fa-fw fa-solid fa-trash"
+                size="small"
                 (onClick)="onClickDeleteItem($event, item.id)"
                 *ngIf="!isViewMode"
               ></p-button>

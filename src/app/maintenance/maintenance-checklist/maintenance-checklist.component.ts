@@ -8,6 +8,7 @@ import { zip } from 'rxjs';
 import { SubSink } from 'subsink';
 import { DropdownChangeEvent, ReactiveFormControls } from '../../app.beans';
 import { AuthService } from '../../auth/auth.service';
+import { CategoryModalComponent } from '../category-modal/category-modal.component';
 import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
 import { AccordionAction, Category, MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
@@ -57,10 +58,33 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       this.maintenanceService.getMaintenanceItems()
     ).subscribe({
       next: ([categories, maintItems]) => {
+
         // Sort by sortOrder property
         this.categories = sortBy(filter(categories, ['type', 'category']), 'sortOrder');
         this.dateCategories = sortBy(filter(categories, ['type', 'date']), 'sortOrder');
         this.maintItems = sortBy(maintItems, 'sortOrder');
+
+        // Adjust the sort order of the items
+        const foundIndex = this.categories.findIndex((cat: Category) => cat.category === 'personal');
+        this.categories[foundIndex].sortOrder = this.categories.length;
+        this.categories = sortBy(this.categories, 'sortOrder');
+        this.categories.forEach((cat: Category, index: number) => {
+          if (index > 0) {
+            if (this.categories[index].sortOrder - 1 !== this.categories[index - 1].sortOrder) {
+              this.categories[index].sortOrder = this.categories[index - 1].sortOrder + 1;
+            }
+          }
+        });
+
+        this.maintenanceService.saveCategories(this.categories);
+
+        this.categories.push({
+          category: 'unassigned',
+          label: 'Unassigned',
+          sharedWith: [],
+          sortOrder: this.categories.length + 1,
+          type: 'category'
+        });
 
         const formControls = this.prepareFormControls(maintItems);
         if (!!formControls) {
@@ -145,6 +169,95 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     }
   }
 
+  addNewCategory(): void {
+    this.onClickEditCategory(undefined, {
+      category: '',
+      label: '',
+      sortOrder: -1,
+      type: 'category',
+      sharedWith: []
+    });
+  }
+
+  onClickEditCategory(event: PointerEvent | undefined, item: Category): void {
+    event?.stopPropagation();
+    this.ref = this.dialogService.open(CategoryModalComponent, {
+      header: item.label || 'New Category',
+      maximizable: true,
+      data: {
+        item: item,
+        categories: this.categories
+      }
+    });
+
+    this.subs.sink = this.ref.onClose.subscribe({
+      next: (category: Category) => {
+        if (!!category) {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved category data' });
+          let foundIndex = this.categories.findIndex((element: Category) => element.id === category.id);
+          if (foundIndex === -1) {
+            // This is a new item
+            // Move 'Personal' & 'Unassigned' to be the last category
+            foundIndex = this.categories.findIndex((element: Category) => element.label === 'Personal');
+            this.categories[foundIndex].sortOrder = this.categories[foundIndex].sortOrder + 1;
+            foundIndex = this.categories.findIndex((element: Category) => element.label === 'Unassigned');
+            this.categories[foundIndex].sortOrder = this.categories[foundIndex].sortOrder + 1;
+
+            this.maintenanceService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
+              // Insert at the correct index, then sort
+              foundIndex = this.categories.findIndex((cat: Category) => cat.sortOrder === category.sortOrder);
+              this.categories.splice(foundIndex, 0, category);
+              this.sortItemsIntoCategories();
+            });
+          } else {
+            // This is an existing item
+            this.categories[foundIndex] = category;
+            this.sortItemsIntoCategories();
+          }
+        }
+      }
+    });
+  }
+
+  onClickDeleteCategory(event: Event, id: string): void {
+    event?.stopPropagation();
+    this.confirmationService.confirm({
+      target: (event.currentTarget || event.target) as EventTarget,
+      message: 'Are you sure that you want to delete?',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.subs.sink = this.maintenanceService.deleteCategory(id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Task deleted successfully' });
+
+            const deleteIndex = this.categories.findIndex((item: Category) => item.id === id);
+            const categoryToDelete = this.categories[deleteIndex];
+
+            // Change the category of all items in this deleted category to "unassigned"
+            this.maintItems.filter((item: MaintenanceItem) => item.category === categoryToDelete.category).forEach((item: MaintenanceItem) => {
+              item.category = 'unassigned';
+            });
+
+            // Update sort order of other items in the same category
+            this.categories.filter((item: Category) => item.sortOrder > categoryToDelete.sortOrder).forEach((item: Category) => {
+              item.sortOrder = item.sortOrder - 1;
+            });
+
+            this.categories.splice(deleteIndex, 1);
+
+            this.subs.sink = this.maintenanceService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
+              this.sortItemsIntoCategories();
+            });
+          }, error: (err) => {
+            console.error(err);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
+          }
+        });
+      },
+      reject: () => { }
+    });
+  }
+
   addNewMaintenanceItem(): void {
     this.onClickEditItem({
       category: 'backyard',
@@ -160,11 +273,12 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   onClickEditItem(item: MaintenanceItem): void {
     this.ref = this.dialogService.open(MaintenanceItemModalComponent, {
-      header: item.label,
+      header: item.label || 'New Item',
       maximizable: true,
       data: {
         item: item,
-        maintItems: this.maintItems
+        maintItems: this.maintItems,
+        categories: this.categories
       }
     });
 
@@ -210,8 +324,19 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Task deleted successfully' });
             const deleteIndex = this.maintItems.findIndex((item: MaintenanceItem) => item.id === id);
+            const itemToDelete = this.maintItems[deleteIndex];
+
+            // Update sort order of other items in the same category
+            this.maintItems.filter((item: MaintenanceItem) => item.category === itemToDelete.category && item.sortOrder > itemToDelete.sortOrder).forEach((item: MaintenanceItem) => {
+              item.sortOrder = item.sortOrder - 1;
+            });
+
+            // Delete the item
             this.maintItems.splice(deleteIndex, 1);
-            this.sortItemsIntoCategories();
+
+            this.subs.sink = this.maintenanceService.saveMaintenanceItems(this.maintItems).subscribe(() => {
+              this.sortItemsIntoCategories();
+            });
           }, error: (err) => {
             console.error(err);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
@@ -222,24 +347,33 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     });
   }
 
+  onAccordionAction(action: AccordionAction): void {
+    this.categories.forEach((cat: Category) => cat.isExpanded = (action === 'expand'));
+    this.dateCategories.forEach((cat: Category) => cat.isExpanded = (action === 'expand'));
+  }
+
   private sortItemsIntoCategories(): void {
     // Initialize the arrays which will hold the maintenance items
     this.categories.forEach((category: Category) => {
       category.items = [];
       category.filteredItems = [];
-      category.isExpanded = true;
     });
 
     this.dateCategories.forEach((category: Category) => {
       category.items = [];
       category.filteredItems = [];
-      category.isExpanded = true;
     });
 
     // Sort items into categories
     let foundIndex: number;
     this.maintItems.forEach((item: MaintenanceItem) => {
       foundIndex = this.categories.findIndex((category: Category) => category.category === item.category);
+      if (foundIndex === -1) {
+        // Category not found, assign to unassigned
+        item.category = 'unassigned';
+        foundIndex = this.categories.findIndex((cat: Category) => cat.category === 'unassigned');
+      }
+
       this.categories[foundIndex].items?.push(item);
       this.categories[foundIndex].filteredItems?.push(item);
     });
@@ -281,11 +415,6 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
         category.filteredItems = sortBy(category.filteredItems, 'dueDate');
       }
     });
-  }
-
-  onAccordionAction(action: AccordionAction): void {
-    this.categories.forEach((cate: Category) => cate.isExpanded = (action === 'expand'));
-    this.dateCategories.forEach((cate: Category) => cate.isExpanded = (action === 'expand'));
   }
 
   private prepareFormControls(items: MaintenanceItem[]): ReactiveFormControls {

@@ -1,0 +1,32 @@
+<hr />
+<form [formGroup]="modalForm!" *ngIf="modalForm" class="modal-form">
+  <div class="field">
+    <label for="item-label">Label</label>
+    <input
+      id="item-label"
+      type="text"
+      class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      formControlName="label"
+    />
+  </div>
+  <div class="field">
+    <label for="item-privacy">Privacy Level</label>
+    <p-dropdown
+      id="item-privacy"
+      formControlName="privacy"
+      appendTo="body"
+      [options]="privacyOptions"
+      styleClass="text-base text-color border-round w-full"
+    ></p-dropdown>
+  </div>
+  <hr />
+  <div class="flex flex-row align-items-center">
+    <p-button
+      label="Save"
+      styleClass="p-button-raised p-button-primary"
+      (onClick)="updateItem()"
+      [disabled]="modalForm.invalid"
+    ></p-button>
+    <p class="text-red-500 ml-2" *ngIf="isError">Unable to save, try again</p>
+  </div>
+</form>

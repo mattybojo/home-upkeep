@@ -3,14 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CKEditorComponent } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
-import { camelCase } from 'lodash';
+import { camelCase, sortBy } from 'lodash';
 import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
 import { AuthService } from '../../auth/auth.service';
-import { getCategoryTypes } from '../maintenance.beans';
+import { Category, MaintenanceItem } from '../maintenance.beans';
 import { MaintenanceService } from '../maintenance.service';
-import { MaintenanceItem } from './../maintenance.beans';
 
 @Component({
   selector: 'app-maintenance-item-modal',
@@ -21,11 +20,12 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
 
   item!: MaintenanceItem;
   maintItems!: MaintenanceItem[];
+  categories!: Category[];
+  categoryOptions!: SelectItem[];
 
   isError: boolean = false;
 
   modalForm: FormGroup | undefined;
-  categoryOptions: SelectItem[] = getCategoryTypes();
   public Editor = ClassicEditor;
 
   private subs = new SubSink();
@@ -38,6 +38,9 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
     this.maintItems = this.config.data.maintItems;
+    this.categories = this.config.data.categories;
+
+    this.categoryOptions = sortBy(this.categories.filter((cat: Category) => cat.label !== 'Unassigned').map((cat: Category) => ({ label: cat.label, value: cat.category })), ['label']);
 
     this.modalForm = new FormGroup({
       control: new FormControl(this.item!.control, null),

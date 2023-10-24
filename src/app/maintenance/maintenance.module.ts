@@ -14,12 +14,14 @@ import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenan
 import { MaintenanceItemModalComponent } from './maintenance-item-modal/maintenance-item-modal.component';
 import { MaintenanceRoutingModule } from './maintenance-routing.module';
 import { ChecklistRowStatusDirective } from './shared/checklist-row-status.directive';
+import { CategoryModalComponent } from './category-modal/category-modal.component';
 
 @NgModule({
   declarations: [
     MaintenanceChecklistComponent,
     ChecklistRowStatusDirective,
-    MaintenanceItemModalComponent
+    MaintenanceItemModalComponent,
+    CategoryModalComponent
   ],
   imports: [
     CommonModule,
