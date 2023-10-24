@@ -3,11 +3,15 @@
     <p-button
       styleClass="p-button-raised p-button-success mb-2 mr-1"
       icon="fa-fw fa-solid fa-plus"
+      pTooltip="Add a new recipe"
+      tooltipPosition="top"
       (onClick)="addNewRecipe()"
     ></p-button>
     <p-button
       styleClass="p-button-raised p-button-secondary mb-2 mr-1"
       [icon]="'fa-fw fa-solid ' + (isViewMode ? 'fa-pen-to-square' : 'fa-eye')"
+      pTooltip="Show/hide edit and delete buttons"
+      tooltipPosition="top"
       (onClick)="isViewMode = !isViewMode"
     ></p-button>
     <p-dropdown
@@ -67,7 +71,6 @@
           style="height: 50px"
           (click)="selectedRecipe = item"
         >
-          <span>{{ item.name }}</span>
           <p-button
             styleClass="p-button-raised p-button-primary mr-1"
             icon="fa-fw fa-solid fa-pen-to-square"
@@ -80,6 +83,7 @@
             (onClick)="onClickDeleteItem($event, item.id)"
             *ngIf="!isViewMode"
           ></p-button>
+          <span>{{ item.name }}</span>
         </div>
       </ng-template>
     </p-scroller>
