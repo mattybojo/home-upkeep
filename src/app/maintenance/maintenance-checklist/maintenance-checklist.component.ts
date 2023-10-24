@@ -211,8 +211,15 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
             });
           } else {
             // This is an existing item
+            this.maintItems.filter((item: MaintenanceItem) => item.category === this.categories[foundIndex].category).forEach((item: MaintenanceItem) => {
+              item.category = category.category;
+            });
+            // Udate the item
             this.categories[foundIndex] = category;
-            this.sortItemsIntoCategories();
+
+            this.subs.sink = this.maintenanceService.saveMaintenanceItems(this.maintItems).subscribe(() => {
+              this.sortItemsIntoCategories();
+            });
           }
         }
       }
