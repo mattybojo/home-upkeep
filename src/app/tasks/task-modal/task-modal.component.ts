@@ -8,18 +8,18 @@ import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
 import { AuthService } from '../../auth/auth.service';
-import { Category, MaintenanceItem } from '../maintenance.beans';
-import { MaintenanceService } from '../maintenance.service';
+import { Category, Task } from '../tasks.beans';
+import { TasksService } from '../tasks.service';
 
 @Component({
-  selector: 'app-maintenance-item-modal',
-  templateUrl: './maintenance-item-modal.component.html',
-  styleUrls: ['./maintenance-item-modal.component.scss'],
+  selector: 'app-task-modal',
+  templateUrl: './task-modal.component.html',
+  styleUrls: ['./task-modal.component.scss'],
 })
-export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
+export class TaskModalComponent implements OnInit, OnDestroy {
 
-  item!: MaintenanceItem;
-  maintItems!: MaintenanceItem[];
+  item!: Task;
+  tasks!: Task[];
   categories!: Category[];
   categoryOptions!: SelectItem[];
 
@@ -33,11 +33,11 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
   @ViewChild('ckNotes') ckNotes!: CKEditorComponent;
 
   constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
-    private maintenanceService: MaintenanceService, private authService: AuthService) { }
+    private tasksService: TasksService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
-    this.maintItems = this.config.data.maintItems;
+    this.tasks = this.config.data.tasks;
     this.categories = this.config.data.categories;
 
     this.categoryOptions = sortBy(this.categories.filter((cat: Category) => cat.label !== 'Unassigned').map((cat: Category) => ({ label: cat.label, value: cat.category })), ['label']);
@@ -64,15 +64,15 @@ export class MaintenanceItemModalComponent implements OnInit, OnDestroy {
       this.modalForm!.get('control')!.setValue(camelCase(this.modalForm!.get('label')!.value));
     }
 
-    const item: MaintenanceItem = Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate });
-    // Calculate sortOrder based on how many maintenance items are currently in the category
+    const item: Task = Object.assign({ ...this.item }, this.modalForm?.value, { notes: this.ckNotes.editorInstance?.data.get(), lastCompletedDate, dueDate });
+    // Calculate sortOrder based on how many tasks are currently in the category
     if (item.sortOrder === -1) {
-      item.sortOrder = this.maintItems.filter((arrayItem: MaintenanceItem) => arrayItem.category === item.category).length + 1;
+      item.sortOrder = this.tasks.filter((arrayItem: Task) => arrayItem.category === item.category).length + 1;
     }
 
     item.sharedWith = item.category !== 'personal' ? this.authService.getSharedWith() : [this.authService.user!.uid];
 
-    this.maintenanceService.saveMaintenanceItem(item).subscribe({
+    this.tasksService.saveTask(item).subscribe({
       next: (resp: DocumentReference<DocumentData> | void) => {
         if (resp?.id) {
           item.id = resp.id;

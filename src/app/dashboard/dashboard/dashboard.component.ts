@@ -4,11 +4,11 @@ import { sortBy } from 'lodash';
 import { MessageService } from 'primeng/api';
 import { Message } from 'primeng/api/message';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { SubSink } from 'subsink';
-import { MaintenanceItemModalComponent } from '../../maintenance/maintenance-item-modal/maintenance-item-modal.component';
-import { Category, MaintenanceItem } from '../../maintenance/maintenance.beans';
-import { MaintenanceService } from '../../maintenance/maintenance.service';
 import { zip } from 'rxjs';
+import { SubSink } from 'subsink';
+import { TaskModalComponent } from '../../tasks/task-modal/task-modal.component';
+import { Category, Task } from '../../tasks/tasks.beans';
+import { TasksService } from '../../tasks/tasks.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,38 +21,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isExpanded: boolean = true;
   pastDueTasksMessages: Message[] = [];
   upcomingTasksMessages: Message[] = [];
-  maintItems: MaintenanceItem[] = []
-  pastDueTasks: MaintenanceItem[] = [];
-  upcomingTasks: MaintenanceItem[] = [];
+  tasks: Task[] = []
+  pastDueTasks: Task[] = [];
+  upcomingTasks: Task[] = [];
 
   ref: DynamicDialogRef | undefined;
 
   private subs = new SubSink();
 
-  constructor(private maintenanceService: MaintenanceService, private dialogService: DialogService,
+  constructor(private tasksService: TasksService, private dialogService: DialogService,
     private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.loadMaintenanceItems();
+    this.loadTasks();
   }
 
-  loadMaintenanceItems(): void {
+  loadTasks(): void {
     this.subs.sink = zip(
-      this.maintenanceService.getCategories(),
-      this.maintenanceService.getMaintenanceItems()
+      this.tasksService.getCategories(),
+      this.tasksService.getTasks()
     ).subscribe({
-      next: ([categories, maintItems]) => {
-        this.maintItems = maintItems;
+      next: ([categories, tasks]) => {
+        this.tasks = tasks;
         this.pastDueTasksMessages = [];
         this.upcomingTasksMessages = [];
         const today = set(new Date(), { hours: 0, minutes: 0, seconds: 0, milliseconds: 0 });
-        this.pastDueTasks = maintItems.filter((item: MaintenanceItem) => item.dueDate && isAfter(today, new Date(item.dueDate)) && !isSameDay(item.dueDate, item.lastCompletedDate));
+        this.pastDueTasks = tasks.filter((item: Task) => item.dueDate && isAfter(today, new Date(item.dueDate)) && !isSameDay(item.dueDate, item.lastCompletedDate));
         let pastDueSeverity: string = 'success';
         if (this.pastDueTasks.length > 0) {
           pastDueSeverity = 'error';
         }
         let foundIndex: number;
-        this.pastDueTasks.forEach((task: MaintenanceItem) => {
+        this.pastDueTasks.forEach((task: Task) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
           foundIndex = categories.findIndex((cat: Category) => cat.category === task.category);
           task.categoryLabel = !!categories[foundIndex] ? categories[foundIndex].label : 'Unassigned';
@@ -61,9 +61,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your checklist.` });
 
         const nextWeek: Date = add(today, { days: 7 });
-        this.upcomingTasks = maintItems.filter((item: MaintenanceItem) => item.dueDate && isBefore(new Date(item.dueDate), nextWeek)
+        this.upcomingTasks = tasks.filter((item: Task) => item.dueDate && isBefore(new Date(item.dueDate), nextWeek)
           && !isSameDay(item.dueDate, item.lastCompletedDate) && !isBefore(new Date(item.dueDate), today));
-        this.upcomingTasks.forEach((task: MaintenanceItem) => {
+        this.upcomingTasks.forEach((task: Task) => {
           task.dueDateString = format(+task.dueDate, 'MMM d (EEE)');
           foundIndex = categories.findIndex((cat: Category) => cat.category === task.category);
           task.categoryLabel = !!categories[foundIndex] ? categories[foundIndex].label : 'Unassigned';
@@ -75,21 +75,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  editMaintenanceItem(item: MaintenanceItem): void {
-    this.ref = this.dialogService.open(MaintenanceItemModalComponent, {
+  editTask(item: Task): void {
+    this.ref = this.dialogService.open(TaskModalComponent, {
       header: item.label,
       maximizable: true,
       data: {
         item: item,
-        maintItems: this.maintItems
+        tasks: this.tasks
       }
     });
 
     this.subs.sink = this.ref.onClose.subscribe({
-      next: (maintItem: MaintenanceItem) => {
-        if (!!maintItem) {
+      next: (task: Task) => {
+        if (!!task) {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Updated task data' });
-          this.loadMaintenanceItems();
+          this.loadTasks();
         }
       }
     });

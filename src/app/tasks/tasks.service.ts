@@ -1,39 +1,39 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, WriteBatch, addDoc, and, collection, collectionData, deleteDoc, doc, or, query, setDoc, where, writeBatch } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, WriteBatch, addDoc, collection, collectionData, deleteDoc, doc, query, setDoc, writeBatch } from '@angular/fire/firestore';
 import { Observable, from } from 'rxjs';
-import { AuthService } from './../auth/auth.service';
-import { Category, MaintenanceItem } from './maintenance.beans';
+import { AuthService } from '../auth/auth.service';
+import { Category, Task } from './tasks.beans';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MaintenanceService {
+export class TasksService {
 
   constructor(private db: Firestore, private authService: AuthService) { }
 
-  getMaintenanceItems(): Observable<MaintenanceItem[]> {
-    const maintItemsRef = query(collection(this.db, 'maintenanceItems'), this.authService.whereSharedWithCurrentUser);
-    return collectionData(maintItemsRef, { idField: 'id' }) as Observable<MaintenanceItem[]>;
+  getTasks(): Observable<Task[]> {
+    const maintItemsRef = query(collection(this.db, 'tasks'), this.authService.whereSharedWithCurrentUser);
+    return collectionData(maintItemsRef, { idField: 'id' }) as Observable<Task[]>;
   }
 
-  saveMaintenanceItem(maintItem: MaintenanceItem): Observable<DocumentReference<DocumentData> | void> {
-    if (!!maintItem.id) {
-      return from(setDoc(doc(this.db, `maintenanceItems/${maintItem.id}`), maintItem));
+  saveTask(task: Task): Observable<DocumentReference<DocumentData> | void> {
+    if (!!task.id) {
+      return from(setDoc(doc(this.db, `tasks/${task.id}`), task));
     } else {
-      return from(addDoc(collection(this.db, 'maintenanceItems'), maintItem));
+      return from(addDoc(collection(this.db, 'tasks'), task));
     }
   }
 
-  saveMaintenanceItems(maintItems: MaintenanceItem[]): Observable<void> {
+  saveTasks(tasks: Task[]): Observable<void> {
     const batch: WriteBatch = writeBatch(this.db);
     let ref: DocumentReference<DocumentData>;
-    maintItems.forEach((item: MaintenanceItem) => {
+    tasks.forEach((item: Task) => {
       if (!!item.id) {
-        ref = doc(this.db, `maintenanceItems/${item.id}`);
+        ref = doc(this.db, `tasks/${item.id}`);
         const { id, ...restOfItem } = item;
         batch.update(ref, { ...restOfItem, uid: this.authService.user!.uid });
       } else {
-        ref = doc(collection(this.db, 'maintenanceItems'));
+        ref = doc(collection(this.db, 'tasks'));
         const { id, ...restOfItem } = item;
         batch.set(ref, { ...restOfItem, uid: this.authService.user!.uid });
       }
@@ -42,8 +42,8 @@ export class MaintenanceService {
     return from(batch.commit());
   }
 
-  deleteMaintenanceItem(id: string): Observable<void> {
-    return from(deleteDoc(doc(this.db, `maintenanceItems/${id}`)));
+  deleteTask(id: string): Observable<void> {
+    return from(deleteDoc(doc(this.db, `tasks/${id}`)));
   }
 
   getCategories(): Observable<Category[]> {

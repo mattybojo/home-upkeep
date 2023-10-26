@@ -12,21 +12,21 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { CategoryModalComponent } from './category-modal/category-modal.component';
-import { MaintenanceChecklistComponent } from './maintenance-checklist/maintenance-checklist.component';
-import { MaintenanceItemModalComponent } from './maintenance-item-modal/maintenance-item-modal.component';
-import { MaintenanceRoutingModule } from './maintenance-routing.module';
-import { ChecklistRowStatusDirective } from './shared/checklist-row-status.directive';
+import { TaskListRowStatusDirective } from './shared/task-list-row-status.directive';
+import { TaskListComponent } from './task-list/task-list.component';
+import { TaskModalComponent } from './task-modal/task-modal.component';
+import { TasksRoutingModule } from './tasks-routing.module';
 
 @NgModule({
   declarations: [
-    MaintenanceChecklistComponent,
-    ChecklistRowStatusDirective,
-    MaintenanceItemModalComponent,
+    TaskListComponent,
+    TaskListRowStatusDirective,
+    TaskModalComponent,
     CategoryModalComponent
   ],
   imports: [
     CommonModule,
-    MaintenanceRoutingModule,
+    TasksRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     AccordionModule,
@@ -41,4 +41,4 @@ import { ChecklistRowStatusDirective } from './shared/checklist-row-status.direc
     TooltipModule
   ]
 })
-export class MaintenanceModule { }
+export class TasksModule { }

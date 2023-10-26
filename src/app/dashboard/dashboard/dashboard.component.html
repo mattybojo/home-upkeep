@@ -1,5 +1,5 @@
 <p-accordion [multiple]="true">
-  <p-accordionTab header="Maintenance Checklist" [selected]="isExpanded">
+  <p-accordionTab header="Task List" [selected]="isExpanded">
     <p-messages
       [(value)]="pastDueTasksMessages"
       [enableService]="false"
@@ -22,11 +22,9 @@
       <ng-template pTemplate="body" let-task>
         <tr>
           <td>
-            <a
-              class="cursor-pointer text-primary"
-              (click)="editMaintenanceItem(task)"
-              >{{ task.label }}</a
-            >
+            <a class="cursor-pointer text-primary" (click)="editTask(task)">{{
+              task.label
+            }}</a>
           </td>
           <td>{{ task.categoryLabel }}</td>
           <td>{{ task.dueDateString }}</td>
@@ -55,11 +53,9 @@
       <ng-template pTemplate="body" let-task>
         <tr>
           <td>
-            <a
-              class="cursor-pointer text-primary"
-              (click)="editMaintenanceItem(task)"
-              >{{ task.label }}</a
-            >
+            <a class="cursor-pointer text-primary" (click)="editTask(task)">{{
+              task.label
+            }}</a>
           </td>
           <td>{{ task.categoryLabel }}</td>
           <td>{{ task.dueDateString }}</td>

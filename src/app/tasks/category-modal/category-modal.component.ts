@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { camelCase, isEmpty } from 'lodash';
+import { SelectItem } from 'primeng/api/selectitem';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
 import { AuthService } from '../../auth/auth.service';
-import { Category } from '../maintenance.beans';
-import { MaintenanceService } from '../maintenance.service';
-import { SelectItem } from 'primeng/api/selectitem';
+import { Category } from '../tasks.beans';
+import { TasksService } from '../tasks.service';
 
 @Component({
   selector: 'app-category-modal',
@@ -33,7 +33,7 @@ export class CategoryModalComponent implements OnInit, OnDestroy {
   private subs = new SubSink();
 
   constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
-    private maintenanceService: MaintenanceService, private authService: AuthService) { }
+    private tasksService: TasksService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.item = Object.assign({}, this.config.data.item);
@@ -48,7 +48,7 @@ export class CategoryModalComponent implements OnInit, OnDestroy {
   updateItem(): void {
     let foundIndex: number;
     const item: Category = Object.assign({ ...this.item }, this.modalForm?.value);
-    // Calculate sortOrder based on how many maintenance items are currently in the category
+    // Calculate sortOrder based on how many tasks are currently in the category
     if (item.sortOrder === -1) {
       if (isEmpty(item.category)) {
         item.category = camelCase(item.label);
@@ -62,7 +62,7 @@ export class CategoryModalComponent implements OnInit, OnDestroy {
 
     item.sharedWith = this.modalForm?.get('privacy')!.value === 'friends' ? this.authService.getSharedWith() : [this.authService.user!.uid];
 
-    this.maintenanceService.saveCategory(item).subscribe({
+    this.tasksService.saveCategory(item).subscribe({
       next: (resp: DocumentReference<DocumentData> | void) => {
         if (resp?.id) {
           item.id = resp.id;

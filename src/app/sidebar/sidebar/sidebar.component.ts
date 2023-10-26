@@ -25,7 +25,7 @@ export class SidebarComponent implements OnInit {
     }, {
       label: 'Checklist',
       icon: 'fa-solid fa-clipboard-list fa-fw',
-      routerLink: '/maintenance',
+      routerLink: '/tasks',
       command: closeSidebar
     }, {
       label: 'Recipe List',

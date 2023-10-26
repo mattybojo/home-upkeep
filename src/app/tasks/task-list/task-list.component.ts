@@ -9,20 +9,20 @@ import { SubSink } from 'subsink';
 import { DropdownChangeEvent, ReactiveFormControls } from '../../app.beans';
 import { AuthService } from '../../auth/auth.service';
 import { CategoryModalComponent } from '../category-modal/category-modal.component';
-import { MaintenanceItemModalComponent } from '../maintenance-item-modal/maintenance-item-modal.component';
-import { AccordionAction, Category, MaintenanceItem, MaintenanceSortOption } from '../maintenance.beans';
-import { MaintenanceService } from '../maintenance.service';
 import { ValidateCompletedDate } from '../shared/date.validator';
+import { TaskModalComponent } from '../task-modal/task-modal.component';
+import { AccordionAction, Category, Task, TaskSortOption } from '../tasks.beans';
+import { TasksService } from '../tasks.service';
 
 @Component({
-  selector: 'app-maintenance-checklist',
-  templateUrl: './maintenance-checklist.component.html',
-  styleUrls: ['./maintenance-checklist.component.scss'],
+  selector: 'app-task-list',
+  templateUrl: './task-list.component.html',
+  styleUrls: ['./task-list.component.scss'],
   providers: [MessageService, DialogService, ConfirmationService]
 })
-export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
+export class TaskListComponent implements OnInit, OnDestroy {
   maintForm: FormGroup | undefined = undefined;
-  maintItems: MaintenanceItem[] = [];
+  tasks: Task[] = [];
   categories: Category[] = [];
   dateCategories: Category[] = [];
   selectedCategories: Category[] = [];
@@ -33,18 +33,18 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   initialFormValues: any = [];
 
-  sortOptions: MaintenanceSortOption[] = [{
+  sortOptions: TaskSortOption[] = [{
     label: 'Category',
     icon: 'fa-solid fa-list fa-fw'
   }, {
     label: 'Due Date',
     icon: 'fa-regular fa-square-check fa-fw'
   }];
-  selectedSort: MaintenanceSortOption = this.sortOptions[0];
+  selectedSort: TaskSortOption = this.sortOptions[0];
 
   private subs = new SubSink();
 
-  constructor(private maintenanceService: MaintenanceService,
+  constructor(private tasksService: TasksService,
     private messageService: MessageService, private dialogService: DialogService,
     private confirmationService: ConfirmationService, private authService: AuthService) { }
 
@@ -54,15 +54,15 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.subs.sink = zip(
-      this.maintenanceService.getCategories(),
-      this.maintenanceService.getMaintenanceItems()
+      this.tasksService.getCategories(),
+      this.tasksService.getTasks()
     ).subscribe({
-      next: ([categories, maintItems]) => {
+      next: ([categories, tasks]) => {
 
         // Sort by sortOrder property
         this.categories = sortBy(filter(categories, ['type', 'category']), 'sortOrder');
         this.dateCategories = sortBy(filter(categories, ['type', 'date']), 'sortOrder');
-        this.maintItems = sortBy(maintItems, 'sortOrder');
+        this.tasks = sortBy(tasks, 'sortOrder');
 
         // Adjust the sort order of the items
         const foundIndex = this.categories.findIndex((cat: Category) => cat.category === 'personal');
@@ -76,7 +76,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           }
         });
 
-        this.maintenanceService.saveCategories(this.categories);
+        this.tasksService.saveCategories(this.categories);
 
         this.categories.push({
           category: 'unassigned',
@@ -86,7 +86,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
           type: 'category'
         });
 
-        const formControls = this.prepareFormControls(maintItems);
+        const formControls = this.prepareFormControls(tasks);
         if (!!formControls) {
           this.maintForm = new FormGroup(formControls);
           this.initialFormValues = this.maintForm.value;
@@ -120,13 +120,13 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   saveForm(): void {
     const request = this.prepareRequest(this.maintForm!.controls);
-    this.maintenanceService.saveMaintenanceItems(request).subscribe({
+    this.tasksService.saveTasks(request).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved all task data' });
         this.initialFormValues = this.maintForm!.value;
         this.maintForm!.reset(this.initialFormValues);
         let control: AbstractControl<any, any> | null;
-        this.maintItems.forEach((item: MaintenanceItem) => {
+        this.tasks.forEach((item: Task) => {
           control = this.maintForm!.get(`${item.control}Date`);
           item.lastCompletedDate = !!control && !!control.value ? control.value.getTime() : 0;
           control = this.maintForm!.get(`${item.control}DueDate`);
@@ -148,16 +148,16 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
   filterMaintItems(): void {
     this.categories.forEach((category: Category) => {
-      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
+      category.filteredItems = category.items?.filter((item: Task) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
       category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
     });
     this.dateCategories.forEach((category: Category) => {
-      category.filteredItems = category.items?.filter((item: MaintenanceItem) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
+      category.filteredItems = category.items?.filter((item: Task) => item.label.toLowerCase().includes(this.filterValue.toLowerCase()));
       category.isExpanded = (category.filteredItems!.length > 0) ? true : false;
     });
   }
 
-  onChangeSortOption(event: DropdownChangeEvent<MaintenanceSortOption>) {
+  onChangeSortOption(event: DropdownChangeEvent<TaskSortOption>) {
     switch (event.value.label) {
       case 'Category':
         this.selectedCategories = this.categories;
@@ -203,7 +203,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
             foundIndex = this.categories.findIndex((element: Category) => element.label === 'Unassigned');
             this.categories[foundIndex].sortOrder = this.categories[foundIndex].sortOrder + 1;
 
-            this.maintenanceService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
+            this.tasksService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
               // Insert at the correct index, then sort
               foundIndex = this.categories.findIndex((cat: Category) => cat.sortOrder === category.sortOrder);
               this.categories.splice(foundIndex, 0, category);
@@ -211,13 +211,13 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
             });
           } else {
             // This is an existing item
-            this.maintItems.filter((item: MaintenanceItem) => item.category === this.categories[foundIndex].category).forEach((item: MaintenanceItem) => {
+            this.tasks.filter((item: Task) => item.category === this.categories[foundIndex].category).forEach((item: Task) => {
               item.category = category.category;
             });
             // Udate the item
             this.categories[foundIndex] = category;
 
-            this.subs.sink = this.maintenanceService.saveMaintenanceItems(this.maintItems).subscribe(() => {
+            this.subs.sink = this.tasksService.saveTasks(this.tasks).subscribe(() => {
               this.sortItemsIntoCategories();
             });
           }
@@ -233,7 +233,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       message: 'Are you sure that you want to delete?',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.subs.sink = this.maintenanceService.deleteCategory(id).subscribe({
+        this.subs.sink = this.tasksService.deleteCategory(id).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Task deleted successfully' });
 
@@ -241,7 +241,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
             const categoryToDelete = this.categories[deleteIndex];
 
             // Change the category of all items in this deleted category to "unassigned"
-            this.maintItems.filter((item: MaintenanceItem) => item.category === categoryToDelete.category).forEach((item: MaintenanceItem) => {
+            this.tasks.filter((item: Task) => item.category === categoryToDelete.category).forEach((item: Task) => {
               item.category = 'unassigned';
             });
 
@@ -252,7 +252,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
             this.categories.splice(deleteIndex, 1);
 
-            this.subs.sink = this.maintenanceService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
+            this.subs.sink = this.tasksService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
               this.sortItemsIntoCategories();
             });
           }, error: (err) => {
@@ -265,7 +265,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     });
   }
 
-  addNewMaintenanceItem(): void {
+  addNewTask(): void {
     this.onClickEditItem({
       category: 'backyard',
       control: '',
@@ -278,43 +278,43 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     });
   }
 
-  onClickEditItem(item: MaintenanceItem): void {
-    this.ref = this.dialogService.open(MaintenanceItemModalComponent, {
+  onClickEditItem(item: Task): void {
+    this.ref = this.dialogService.open(TaskModalComponent, {
       header: item.label || 'New Item',
       maximizable: true,
       data: {
         item: item,
-        maintItems: this.maintItems,
+        tasks: this.tasks,
         categories: this.categories
       }
     });
 
     this.subs.sink = this.ref.onClose.subscribe({
-      next: (maintItem: MaintenanceItem) => {
-        if (!!maintItem) {
+      next: (task: Task) => {
+        if (!!task) {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved task data' });
 
-          const dateControlValue: Date | undefined = maintItem.lastCompletedDate === 0 ? undefined : new Date(maintItem.lastCompletedDate);
-          const dueDateControlValue: Date | undefined = maintItem.dueDate === 0 ? undefined : new Date(maintItem.dueDate);
+          const dateControlValue: Date | undefined = task.lastCompletedDate === 0 ? undefined : new Date(task.lastCompletedDate);
+          const dueDateControlValue: Date | undefined = task.dueDate === 0 ? undefined : new Date(task.dueDate);
 
-          const foundIndex = this.maintItems.findIndex((element: MaintenanceItem) => element.id === maintItem.id);
+          const foundIndex = this.tasks.findIndex((element: Task) => element.id === task.id);
           if (foundIndex === -1) {
             // This is a new item
-            this.maintItems.push(maintItem);
+            this.tasks.push(task);
             this.sortItemsIntoCategories();
 
             // Create new controls in the form
-            this.maintForm!.addControl(`${maintItem.control}Date`, new FormControl(dateControlValue, null));
-            this.maintForm!.addControl(`${maintItem.control}DueDate`, new FormControl(dueDateControlValue, null));
+            this.maintForm!.addControl(`${task.control}Date`, new FormControl(dateControlValue, null));
+            this.maintForm!.addControl(`${task.control}DueDate`, new FormControl(dueDateControlValue, null));
           } else {
             // This is an existing item
             // Update category.items here
-            this.maintItems[foundIndex] = maintItem;
+            this.tasks[foundIndex] = task;
             this.sortItemsIntoCategories();
 
             // Update maintForm
-            this.maintForm!.controls[`${maintItem.control}Date`]!.setValue(dateControlValue);
-            this.maintForm!.controls[`${maintItem.control}DueDate`]!.setValue(dueDateControlValue);
+            this.maintForm!.controls[`${task.control}Date`]!.setValue(dateControlValue);
+            this.maintForm!.controls[`${task.control}DueDate`]!.setValue(dueDateControlValue);
           }
         }
       }
@@ -327,21 +327,21 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       message: 'Are you sure that you want to delete?',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.subs.sink = this.maintenanceService.deleteMaintenanceItem(id).subscribe({
+        this.subs.sink = this.tasksService.deleteTask(id).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Task deleted successfully' });
-            const deleteIndex = this.maintItems.findIndex((item: MaintenanceItem) => item.id === id);
-            const itemToDelete = this.maintItems[deleteIndex];
+            const deleteIndex = this.tasks.findIndex((item: Task) => item.id === id);
+            const itemToDelete = this.tasks[deleteIndex];
 
             // Update sort order of other items in the same category
-            this.maintItems.filter((item: MaintenanceItem) => item.category === itemToDelete.category && item.sortOrder > itemToDelete.sortOrder).forEach((item: MaintenanceItem) => {
+            this.tasks.filter((item: Task) => item.category === itemToDelete.category && item.sortOrder > itemToDelete.sortOrder).forEach((item: Task) => {
               item.sortOrder = item.sortOrder - 1;
             });
 
             // Delete the item
-            this.maintItems.splice(deleteIndex, 1);
+            this.tasks.splice(deleteIndex, 1);
 
-            this.subs.sink = this.maintenanceService.saveMaintenanceItems(this.maintItems).subscribe(() => {
+            this.subs.sink = this.tasksService.saveTasks(this.tasks).subscribe(() => {
               this.sortItemsIntoCategories();
             });
           }, error: (err) => {
@@ -360,7 +360,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
   }
 
   private sortItemsIntoCategories(): void {
-    // Initialize the arrays which will hold the maintenance items
+    // Initialize the arrays which will hold the tasks
     this.categories.forEach((category: Category) => {
       category.items = [];
       category.filteredItems = [];
@@ -373,7 +373,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
     // Sort items into categories
     let foundIndex: number;
-    this.maintItems.forEach((item: MaintenanceItem) => {
+    this.tasks.forEach((item: Task) => {
       foundIndex = this.categories.findIndex((category: Category) => category.category === item.category);
       if (foundIndex === -1) {
         // Category not found, assign to unassigned
@@ -393,7 +393,7 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
 
     // Add items to the appropriate categories
     let categoryType: string;
-    this.maintItems.forEach((item: MaintenanceItem) => {
+    this.tasks.forEach((item: Task) => {
       if (item.dueDate === 0) {
         categoryType = 'noDate';
       } else if (isBefore(new Date(item.dueDate), today)) {
@@ -424,11 +424,11 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     });
   }
 
-  private prepareFormControls(items: MaintenanceItem[]): ReactiveFormControls {
+  private prepareFormControls(items: Task[]): ReactiveFormControls {
     const formControls: ReactiveFormControls = {};
     let dueDate: Date | undefined;
     let lastDate: Date | undefined;
-    items.forEach((item: MaintenanceItem) => {
+    items.forEach((item: Task) => {
       lastDate = !!item.lastCompletedDate ? new Date(item.lastCompletedDate) : undefined;
       dueDate = !!item.dueDate ? new Date(item.dueDate) : undefined;
       formControls[`${item.control}Date`] = new FormControl(lastDate, [ValidateCompletedDate]);
@@ -437,8 +437,8 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
     return formControls;
   }
 
-  private prepareRequest(controls: ReactiveFormControls): MaintenanceItem[] {
-    const items: MaintenanceItem[] = JSON.parse(JSON.stringify(this.maintItems));
+  private prepareRequest(controls: ReactiveFormControls): Task[] {
+    const items: Task[] = JSON.parse(JSON.stringify(this.tasks));
     let keyLength: number;
     let keyName: string = '';
     let objProp: string;
@@ -455,9 +455,9 @@ export class MaintenanceChecklistComponent implements OnInit, OnDestroy {
       }
       keyName = key.substring(0, keyLength);
 
-      foundIndex = items.findIndex((item: MaintenanceItem) => item.control === keyName);
+      foundIndex = items.findIndex((item: Task) => item.control === keyName);
       newValue = !!value.value ? value.value.getTime() : 0;
-      (items[foundIndex] as any)[objProp as keyof MaintenanceItem] = newValue;
+      (items[foundIndex] as any)[objProp as keyof Task] = newValue;
     }
     return items;
   }

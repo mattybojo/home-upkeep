@@ -5,7 +5,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SubSink } from 'subsink';
 import { DropdownChangeEvent } from '../../app.beans';
 import { AuthService } from '../../auth/auth.service';
-import { MaintenanceSortOption } from '../../maintenance/maintenance.beans';
+import { TaskSortOption } from '../../tasks/tasks.beans';
 import { newRecipe } from '../meal-helpers';
 import { Recipe } from '../meal.beans';
 import { RecipeModalComponent } from '../recipe-modal/recipe-modal.component';
@@ -26,14 +26,14 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   ref: DynamicDialogRef | undefined;
   isViewMode: boolean = true;
 
-  sortOptions: MaintenanceSortOption[] = [{
+  sortOptions: TaskSortOption[] = [{
     label: 'A-Z',
     icon: 'fa-solid fa-arrow-down-a-z fa-fw'
   }, {
     label: 'Time',
     icon: 'fa-solid fa-clock fa-fw'
   }];
-  selectedSort: MaintenanceSortOption = this.sortOptions[0];
+  selectedSort: TaskSortOption = this.sortOptions[0];
 
   private subs = new SubSink();
 
@@ -101,7 +101,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
     });
   }
 
-  onChangeSortOption(event: DropdownChangeEvent<MaintenanceSortOption>) {
+  onChangeSortOption(event: DropdownChangeEvent<TaskSortOption>) {
     switch (event.value.label) {
       case 'A-Z':
         this.recipes = sortBy(this.recipes, 'name');

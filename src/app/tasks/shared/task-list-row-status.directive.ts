@@ -3,9 +3,9 @@ import { isAfter, isSameDay, set } from 'date-fns';
 import { without } from 'lodash';
 
 @Directive({
-  selector: '[checklistRowStatus]'
+  selector: '[taskListRowStatus]'
 })
-export class ChecklistRowStatusDirective implements OnChanges {
+export class TaskListRowStatusDirective implements OnChanges {
   // @ts-ignore
   @Input() doneDate: Date;
   // @ts-ignore

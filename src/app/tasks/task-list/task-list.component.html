@@ -13,7 +13,7 @@
         icon="fa-fw fa-solid fa-plus"
         pTooltip="Add a new task"
         tooltipPosition="top"
-        (onClick)="addNewMaintenanceItem()"
+        (onClick)="addNewTask()"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-secondary mb-2 mr-1"
@@ -145,7 +145,7 @@
       <div class="grid">
         <ng-container *ngFor="let item of items">
           <div
-            checklistRowStatus
+            taskListRowStatus
             [doneDate]="maintForm.get(item.control + 'Date')?.value"
             [dueDate]="maintForm.get(item.control + 'DueDate')?.value"
             [isTouched]="maintForm.get(item.control + 'DueDate')?.touched!"

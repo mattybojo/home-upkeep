@@ -1,6 +1,6 @@
 import { UserDataPermission } from '../app.beans';
 
-export interface MaintenanceItem extends UserDataPermission {
+export interface Task extends UserDataPermission {
   id?: string;
   category: string;
   label: string;
@@ -20,12 +20,12 @@ export interface Category extends UserDataPermission {
   category: string;
   sortOrder: number;
   type: ChecklistType;
-  items?: MaintenanceItem[];
-  filteredItems?: MaintenanceItem[];
+  items?: Task[];
+  filteredItems?: Task[];
   isExpanded?: boolean;
 }
 
-export interface MaintenanceSortOption {
+export interface TaskSortOption {
   label: string;
   icon: string;
 }

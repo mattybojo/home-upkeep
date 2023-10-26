@@ -10,8 +10,8 @@ const routes: Routes = [{
   loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
   ...canActivate(redirectUnauthorizedToLogin)
 }, {
-  path: 'maintenance',
-  loadChildren: () => import('./maintenance/maintenance.module').then(m => m.MaintenanceModule),
+  path: 'tasks',
+  loadChildren: () => import('./tasks/tasks.module').then(m => m.TasksModule),
   ...canActivate(redirectUnauthorizedToLogin)
 }, {
   path: 'meals',
