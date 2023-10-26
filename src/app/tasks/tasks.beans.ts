@@ -19,7 +19,7 @@ export interface Category extends UserDataPermission {
   label: string;
   category: string;
   sortOrder: number;
-  type: ChecklistType;
+  type: CategoryType;
   items?: Task[];
   filteredItems?: Task[];
   isExpanded?: boolean;
@@ -30,5 +30,5 @@ export interface TaskSortOption {
   icon: string;
 }
 
-export type ChecklistType = 'category' | 'date';
+export type CategoryType = 'category' | 'date';
 export type AccordionAction = 'collapse' | 'expand';

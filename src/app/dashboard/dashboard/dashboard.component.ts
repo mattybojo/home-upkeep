@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           task.categoryLabel = !!categories[foundIndex] ? categories[foundIndex].label : 'Unassigned';
         });
         this.pastDueTasks = sortBy(this.pastDueTasks, ['dueDate', 'label']);
-        this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your checklist.` });
+        this.pastDueTasksMessages.push({ severity: pastDueSeverity, summary: 'Past Due Tasks', detail: `There ${this.pastDueTasks.length === 1 ? 'is' : 'are'} currently ${this.pastDueTasks.length} past due task(s) on your task list.` });
 
         const nextWeek: Date = add(today, { days: 7 });
         this.upcomingTasks = tasks.filter((item: Task) => item.dueDate && isBefore(new Date(item.dueDate), nextWeek)
