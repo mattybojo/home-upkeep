@@ -89,7 +89,7 @@ export class MealPlannerComponent implements OnInit, OnDestroy {
         this.initialFormValues = this.mealForm.value;
         this.meals = sortBy(meals, 'date');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve recipes' });
       }

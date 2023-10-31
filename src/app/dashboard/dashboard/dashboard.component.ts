@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.upcomingTasks = sortBy(this.upcomingTasks, ['dueDate', 'label']);
         this.upcomingTasksMessages.push({ severity: 'info', summary: 'Upcoming Tasks', detail: `There ${this.upcomingTasks.length === 1 ? 'is' : 'are'} currently ${this.upcomingTasks.length} tasks with due dates this next week.` });
       },
-      error: (err) => console.error(err)
+      error: (err: any) => console.error(err)
     });
   }
 

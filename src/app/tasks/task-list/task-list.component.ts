@@ -100,7 +100,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
         // Set the correct view based on what is selected
         this.selectedCategories = this.selectedSort.label === 'Category' ? this.categories : this.dateCategories;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve task data' });
       }
@@ -255,7 +255,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
             this.subs.sink = this.tasksService.saveCategories(this.categories.filter((cat: Category) => cat.label !== 'Unassigned')).subscribe(() => {
               this.sortItemsIntoCategories();
             });
-          }, error: (err) => {
+          }, error: (err: any) => {
             console.error(err);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
           }
@@ -344,7 +344,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
             this.subs.sink = this.tasksService.saveTasks(this.tasks).subscribe(() => {
               this.sortItemsIntoCategories();
             });
-          }, error: (err) => {
+          }, error: (err: any) => {
             console.error(err);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
           }

@@ -53,7 +53,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
           this.filterRecipes();
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve recipes' });
       }
@@ -91,7 +91,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
         this.subs.sink = this.mealService.deleteRecipe(id).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipe deleted successfully' });
-          }, error: (err) => {
+          }, error: (err: any) => {
             console.error(err);
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to delete task' });
           }
