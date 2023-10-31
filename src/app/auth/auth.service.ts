@@ -4,7 +4,7 @@ import {
   Firestore,
   QueryCompositeFilterConstraint,
   QueryFieldFilterConstraint,
-  collection, collectionData, doc, or, setDoc, where
+  collection, collectionData, doc, docData, or, setDoc, where
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { User } from '@firebase/auth-types';
@@ -68,12 +68,21 @@ export class AuthService {
     });
   }
 
-  getUsers(): Observable<User[]> {
-    const usersRef = collection(this.db, 'users');
-    return collectionData(usersRef) as Observable<User[]>;
+  getUser(): Observable<HomeUpkeepUser> {
+    const userRef = doc(this.db, `users/${this.user!.uid}`);
+    return docData(userRef) as Observable<HomeUpkeepUser>;
   }
 
-  saveUser(user: User): Observable<void> {
+  getUsers(): Observable<HomeUpkeepUser[]> {
+    const usersRef = collection(this.db, 'users');
+    return collectionData(usersRef) as Observable<HomeUpkeepUser[]>;
+  }
+
+  saveUser(user: HomeUpkeepUser): Observable<void> {
+    return from(setDoc(doc(this.db, `users/${user.uid}`), user));
+  }
+
+  saveUserOnSignup(user: User): Observable<void> {
     return from(setDoc(doc(this.db, `users/${user.uid}`), this.convertToFirestoreUser(user)));
   }
 

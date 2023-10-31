@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
-import { canActivate, redirectLoggedInTo, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
+import { canActivate } from '@angular/fire/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
-
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/auth/login']);
-const redirectLoggedInToDashboard = () => redirectLoggedInTo(['/']);
+import { redirectUnauthorizedToLogin } from './auth/auth-helpers';
 
 const routes: Routes = [{
   path: '',
@@ -20,7 +18,6 @@ const routes: Routes = [{
 }, {
   path: 'auth',
   loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
-  ...canActivate(redirectLoggedInToDashboard)
 }];
 
 @NgModule({

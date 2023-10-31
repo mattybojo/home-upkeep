@@ -17,7 +17,7 @@ export class LoginComponent implements OnDestroy {
 
   successCallback(signInSuccessData: FirebaseUISignInSuccessWithAuthResult) {
     if (signInSuccessData.authResult.additionalUserInfo?.isNewUser) {
-      this.authService.saveUser(signInSuccessData.authResult.user!).subscribe({
+      this.authService.saveUserOnSignup(signInSuccessData.authResult.user!).subscribe({
         next: () => {
           this.router.navigateByUrl('/');
         },
