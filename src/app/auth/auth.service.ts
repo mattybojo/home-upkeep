@@ -40,8 +40,8 @@ export class AuthService {
       this._user = JSON.parse(localUser) as unknown as User;
       isLoggedIn = true;
       this.isLoggedIn$.next(true);
-      this.whereCurrentUserIsOwner = where('uid', '==', this._user?.uid);
-      this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user?.uid)
+      this.whereCurrentUserIsOwner = where('uid', '==', this._user!.uid);
+      this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user!.uid)
       this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
     }
 
@@ -54,6 +54,9 @@ export class AuthService {
 
       if (!!user) {
         localStorage.setItem('user', JSON.stringify(user));
+        this.whereCurrentUserIsOwner = where('uid', '==', this._user!.uid);
+        this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user!.uid)
+        this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
       } else {
         localStorage.removeItem('user');
       }
