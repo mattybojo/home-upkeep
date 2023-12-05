@@ -18,6 +18,8 @@ import { TasksService } from '../../tasks/tasks.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  categories: Category[] = [];
+
   isExpanded: boolean = true;
   pastDueTasksMessages: Message[] = [];
   upcomingTasksMessages: Message[] = [];
@@ -42,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.tasksService.getTasks()
     ).subscribe({
       next: ([categories, tasks]) => {
+        this.categories = categories;
         this.tasks = tasks;
         this.pastDueTasksMessages = [];
         this.upcomingTasksMessages = [];
@@ -81,7 +84,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       maximizable: true,
       data: {
         item: item,
-        tasks: this.tasks
+        tasks: this.tasks,
+        categories: this.categories
       }
     });
 
