@@ -12,10 +12,6 @@ const routes: Routes = [{
   loadChildren: () => import('./tasks/tasks.module').then(m => m.TasksModule),
   ...canActivate(redirectUnauthorizedToLogin)
 }, {
-  path: 'meals',
-  loadChildren: () => import('./meal/meal.module').then(m => m.MealModule),
-  ...canActivate(redirectUnauthorizedToLogin)
-}, {
   path: 'auth',
   loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
 }];
