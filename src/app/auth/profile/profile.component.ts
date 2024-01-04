@@ -66,7 +66,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         console.error(err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve recipes' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to save user data' });
       }
     });
   }
