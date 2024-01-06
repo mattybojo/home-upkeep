@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
 import { AuthDropdownOption } from './app.beans';
 import { AuthService } from './auth/auth.service';
 
