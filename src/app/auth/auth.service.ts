@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Injectable, inject } from '@angular/core';
+import { Auth, GoogleAuthProvider, User, UserCredential, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup } from '@angular/fire/auth';
 import {
   Firestore,
   QueryCompositeFilterConstraint,
@@ -7,16 +7,17 @@ import {
   collection, collectionData, doc, docData, or, setDoc, where
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { User } from '@firebase/auth-types';
 import { flatten } from 'lodash';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { USER_GROUPS } from '../app.config';
-import { HomeUpkeepUser } from './auth.beans';
+import { AuthProvider, HomeUpkeepUser } from './auth.beans';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+  private _auth: Auth = inject(Auth);
 
   private _user: User | null = null;
 
@@ -31,7 +32,7 @@ export class AuthService {
   whereSharedWithCurrentUser!: QueryFieldFilterConstraint;
   whereCurrentUserIsAllowed!: QueryCompositeFilterConstraint;
 
-  constructor(private afAuth: AngularFireAuth, private router: Router,
+  constructor(private router: Router,
     private db: Firestore) {
 
     const localUser = localStorage.getItem('user');
@@ -45,28 +46,62 @@ export class AuthService {
       this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
     }
 
-    this.afAuth.authState.subscribe((user: User | null) => {
-      this._user = user;
+    this._auth.onAuthStateChanged({
+      next: (user: User | null) => {
+        this._user = user;
 
-      if (!isLoggedIn) {
-        this.isLoggedIn$.next(!!user);
-      }
+        if (!isLoggedIn) {
+          this.isLoggedIn$.next(!!user);
+        }
 
-      if (!!user) {
-        localStorage.setItem('user', JSON.stringify(user));
-        this.whereCurrentUserIsOwner = where('uid', '==', this._user!.uid);
-        this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user!.uid)
-        this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
-      } else {
-        localStorage.removeItem('user');
-      }
+        if (!!user) {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.whereCurrentUserIsOwner = where('uid', '==', this._user!.uid);
+          this.whereSharedWithCurrentUser = where('sharedWith', 'array-contains', this._user!.uid)
+          this.whereCurrentUserIsAllowed = or(this.whereCurrentUserIsOwner, this.whereSharedWithCurrentUser);
+        } else {
+          localStorage.removeItem('user');
+        }
+      },
+      complete: () => { },
+      error: () => { }
     });
   }
 
   ngOnInit(): void { }
 
+  signIn(email: string, password: string, isNew: boolean, authProvider: AuthProvider): void {
+    let provider;
+    if (isNew) {
+      // Register new user
+      createUserWithEmailAndPassword(this._auth, email, password).then(() => {
+        this.router.navigateByUrl('/');
+      }).catch(err => console.log(err));
+    } else if (authProvider) {
+      switch (authProvider) {
+        case 'google':
+          provider = new GoogleAuthProvider();
+          provider.addScope('profile');
+          provider.addScope('email');
+          signInWithPopup(this._auth, provider).then(() => {
+            this.router.navigateByUrl('/');
+          }).catch(err => console.log(err));;
+
+      }
+    } else {
+      signInWithEmailAndPassword(this._auth, email, password).then((userCredential: UserCredential) => {
+        this.router.navigateByUrl('/');
+      }).catch(err => console.log(err));;
+    }
+  }
+
+  resetPassword(email: string): void {
+    sendPasswordResetEmail(this._auth, email).then(() => {
+    }).catch(err => console.log(err));
+  }
+
   logout() {
-    this.afAuth.signOut().then(() => {
+    this._auth.signOut().then(() => {
       this.router.navigateByUrl('/auth/login');
     });
   }

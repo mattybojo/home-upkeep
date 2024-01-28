@@ -6,17 +6,17 @@ import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [{
-  path: 'login',
-  component: LoginComponent,
-  ...canActivate(redirectLoggedInToDashboard)
+    path: 'login',
+    component: LoginComponent,
+    ...canActivate(redirectLoggedInToDashboard)
 }, {
-  path: 'profile',
-  component: ProfileComponent,
-  ...canActivate(redirectUnauthorizedToLogin)
+    path: 'profile',
+    component: ProfileComponent,
+    ...canActivate(redirectUnauthorizedToLogin)
 }];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
 export class AuthRoutingModule { }

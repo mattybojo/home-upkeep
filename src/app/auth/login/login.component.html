@@ -1,5 +1,96 @@
-<firebase-ui
-  (signInSuccessWithAuthResult)="successCallback($event)"
-  (signInFailure)="errorCallback($event)"
-  (uiShown)="uiShownCallback()"
-></firebase-ui>
+<p-dialog [visible]="true">
+    <ng-template pTemplate="headless">
+        <form
+            class="flex flex-column px-8 py-5 gap-4 login-form"
+            [formGroup]="loginForm"
+        >
+            <!-- style="
+                background-image: radial-gradient(
+                    circle at left top,
+                    var(--primary-400),
+                    var(--primary-700)
+                );
+            " -->
+            <div class="flex flex-column gap-2 align-items-center">
+                <fa-icon
+                    [icon]="faToolbox"
+                    size="3x"
+                    class="text-white"
+                ></fa-icon>
+            </div>
+
+            <div class="inline-flex flex-column gap-2">
+                <label for="email" class="text-primary-50 font-semibold"
+                    >Email</label
+                >
+                <input
+                    pInputText
+                    id="email"
+                    formControlName="email"
+                    class="bg-white-alpha-20 border-none p-3 text-primary-50"
+                />
+            </div>
+            <div class="inline-flex flex-column gap-2">
+                <label for="password" class="text-primary-50 font-semibold"
+                    >Password</label
+                >
+                <input
+                    pInputText
+                    id="password"
+                    formControlName="password"
+                    class="bg-white-alpha-20 border-none p-3 text-primary-50"
+                    type="password"
+                    aria-describedby="password-help"
+                />
+                <small id="password-help" class="text-white"
+                    >Click
+                    <a href="javascript:void(0)" (click)="resetPassword()"
+                        >here</a
+                    >
+                    to reset your password.</small
+                >
+            </div>
+            <div class="flex align-items-center gap-2">
+                <p-button
+                    label="Login"
+                    (click)="signInWithPassword()"
+                    [text]="true"
+                    styleClass="w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"
+                    class="w-full"
+                    [disabled]="loginForm.invalid"
+                ></p-button>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <p-button
+                    label="Register New User"
+                    (click)="registerNewUser()"
+                    [text]="true"
+                    styleClass="w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"
+                    class="w-full"
+                    [disabled]="loginForm.invalid"
+                ></p-button>
+            </div>
+            <div
+                class="flex justify-content-center align-items-center gap-2 text-white"
+            >
+                <p>- or -</p>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <p-button
+                    label="Sign In With Google"
+                    (click)="signInWithProvider('google')"
+                    [text]="true"
+                    styleClass="w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"
+                    class="w-full"
+                    ><fa-icon
+                        size="2xl"
+                        [icon]="faGoogle"
+                        [fixedWidth]="true"
+                    ></fa-icon
+                ></p-button>
+            </div>
+        </form>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

@@ -1,0 +1,27 @@
+<div
+    class="layout-sidebar"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+>
+    <div class="sidebar-header">
+        <a [routerLink]="['/']" class="logo align-items-center">
+            <div class="logo-image">
+                <fa-icon
+                    [icon]="faToolbox"
+                    [ngClass]="logoColor === 'white' ? 'text-100' : 'text-900'"
+                    size="2xl"
+                ></fa-icon>
+            </div>
+            <span class="app-name">RENOIR</span>
+        </a>
+        <button
+            class="layout-sidebar-anchor p-link"
+            type="button"
+            (click)="anchor()"
+        ></button>
+    </div>
+
+    <div #menuContainer class="layout-menu-container">
+        <app-menu></app-menu>
+    </div>
+</div>

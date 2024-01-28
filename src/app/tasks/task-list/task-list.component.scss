@@ -1,7 +1,12 @@
-.next-due-date-btns > *:not(:last-child) {
-  margin-right: 0.25rem;
+.next-due-date-btns {
+    > *:not(:last-child) {
+        margin-right: 0.25rem;
+    }
+    ::ng-deep button.p-button {
+        margin-bottom: 0.25rem;
+    }
 }
 
 .filter-input.p-input-icon-right > i {
-  top: 40%;
+    top: 40%;
 }

@@ -1,41 +1,61 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FirebaseUISignInFailure, FirebaseUISignInSuccessWithAuthResult } from 'firebaseui-angular';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faToolbox } from '@fortawesome/free-solid-svg-icons';
+import { MessageService } from 'primeng/api';
 import { SubSink } from 'subsink';
+import { AuthProvider } from '../auth.beans';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    providers: [MessageService]
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
 
-  private subs = new SubSink();
+    loginForm: FormGroup;
 
-  constructor(private router: Router, private authService: AuthService) { }
+    private subs = new SubSink();
 
-  successCallback(signInSuccessData: FirebaseUISignInSuccessWithAuthResult) {
-    if (signInSuccessData.authResult.additionalUserInfo?.isNewUser) {
-      this.authService.saveUserOnSignup(signInSuccessData.authResult.user!).subscribe({
-        next: () => {
-          this.router.navigateByUrl('/');
-        },
-        error: (err: any) => {
-          console.error(err);
-          this.router.navigateByUrl('/');
-        }
-      });
-    } else {
-      this.router.navigateByUrl('/');
+    // Icons
+    faGoogle = faGoogle;
+    faToolbox = faToolbox;
+
+    constructor(private router: Router, private authService: AuthService, private messageService: MessageService) {
+        this.loginForm = new FormGroup({
+            email: new FormControl('', [Validators.required]),
+            password: new FormControl('', [Validators.required])
+        });
     }
-  }
 
-  errorCallback(errorData: FirebaseUISignInFailure) { }
+    ngOnInit(): void {
 
-  uiShownCallback() { }
+    }
 
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-  }
+    registerNewUser(): void {
+        this.authService.signIn(this.loginForm.value.name, this.loginForm.value.password, true, '');
+    }
+
+    signInWithPassword(): void {
+        this.authService.signIn(this.loginForm.value.name, this.loginForm.value.password, false, '');
+    }
+
+    signInWithProvider(type: AuthProvider): void {
+        this.authService.signIn('', '', false, type);
+    }
+
+    resetPassword(): void {
+        if (!this.loginForm.value.email) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Enter your email to receive a reset email.' });
+        } else {
+            this.authService.resetPassword(this.loginForm.value.email);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
+    }
 }

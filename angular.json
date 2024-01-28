@@ -17,16 +17,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": [
-              "@firebase/app",
-              "firebase/app",
-              "@firebase/database",
-              "@firebase/util",
-              "@firebase/component",
-              "@firebase/auth",
-              "firebaseui",
-              "firebaseui-angular"
-            ],
             "outputPath": "dist/home-upkeep",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -34,17 +24,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "src/styles.scss",
-              "node_modules/primeflex/primeflex.min.css",
-              "node_modules/primeng/resources/themes/nano/theme.css",
-              "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/brands.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/regular.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/solid.min.css",
-              "node_modules/firebaseui/dist/firebaseui.css"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -52,7 +32,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "4mb",
+                  "maximumWarning": "1mb",
                   "maximumError": "5mb"
                 },
                 {
@@ -84,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "prod": {
-              "browserTarget": "home-upkeep:build:prod"
+              "buildTarget": "home-upkeep:build:prod"
             },
             "dev": {
-              "browserTarget": "home-upkeep:build:dev"
+              "buildTarget": "home-upkeep:build:dev"
             }
           },
           "defaultConfiguration": "dev"
@@ -95,7 +75,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "home-upkeep:build"
+            "buildTarget": "home-upkeep:build"
           }
         },
         "test": {
@@ -103,19 +83,10 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "src/styles.scss",
-              "node_modules/primeflex/primeflex.min.css",
-              "node_modules/primeng/resources/themes/nano/theme.css",
-              "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/brands.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/regular.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/solid.min.css",
-              "node_modules/firebaseui/dist/firebaseui.css"
-            ],
+            "styles": ["src/styles.scss"],
             "scripts": []
           }
         },

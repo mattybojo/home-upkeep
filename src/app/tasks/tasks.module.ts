@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { EditorModule } from 'primeng/editor';
 import { InputTextModule } from 'primeng/inputtext';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ToastModule } from 'primeng/toast';
@@ -16,29 +16,31 @@ import { TaskListRowStatusDirective } from './shared/task-list-row-status.direct
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskModalComponent } from './task-modal/task-modal.component';
 import { TasksRoutingModule } from './tasks-routing.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [
-    TaskListComponent,
-    TaskListRowStatusDirective,
-    TaskModalComponent,
-    CategoryModalComponent
-  ],
-  imports: [
-    CommonModule,
-    TasksRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AccordionModule,
-    CalendarModule,
-    ToastModule,
-    InputTextModule,
-    DropdownModule,
-    OverlayPanelModule,
-    DynamicDialogModule,
-    CKEditorModule,
-    ConfirmPopupModule,
-    TooltipModule
-  ]
+    declarations: [
+        TaskListComponent,
+        TaskListRowStatusDirective,
+        TaskModalComponent,
+        CategoryModalComponent
+    ],
+    imports: [
+        CommonModule,
+        TasksRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AccordionModule,
+        CalendarModule,
+        ToastModule,
+        InputTextModule,
+        DropdownModule,
+        OverlayPanelModule,
+        DynamicDialogModule,
+        EditorModule,
+        ConfirmPopupModule,
+        TooltipModule,
+        FontAwesomeModule
+    ]
 })
 export class TasksModule { }

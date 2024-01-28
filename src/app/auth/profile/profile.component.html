@@ -1,73 +1,84 @@
 <form [formGroup]="userForm!" (ngSubmit)="saveForm()" *ngIf="userForm">
-  <div class="flex justify-content-center my-4">
-    <p-avatar
-      [image]="user!.photoURL"
-      shape="circle"
-      size="xlarge"
-      *ngIf="user!.photoURL; else noPhotoURL"
-    ></p-avatar>
-    <ng-template #noPhotoURL>
-      <p-avatar [label]="userInitials" shape="circle" size="xlarge"></p-avatar>
-    </ng-template>
-    <div class="flex flex-column justify-content-center ml-2">
-      <p class="mb-1">{{ user?.displayName }}</p>
-      <p class="text-gray-500 uppercase text-sm mb-1">{{ user?.email }}</p>
-      <p class="text-sm">Since {{ formattedDateCreated }}</p>
+    <div class="flex justify-content-center my-4">
+        <p-avatar
+            [image]="user!.photoURL"
+            shape="circle"
+            size="xlarge"
+            *ngIf="user!.photoURL; else noPhotoURL"
+        ></p-avatar>
+        <ng-template #noPhotoURL>
+            <p-avatar
+                [label]="userInitials"
+                shape="circle"
+                size="xlarge"
+            ></p-avatar>
+        </ng-template>
+        <div class="flex flex-column justify-content-center ml-2">
+            <p class="mb-1">{{ user?.displayName }}</p>
+            <p class="text-gray-500 uppercase text-sm mb-1">
+                {{ user?.email }}
+            </p>
+            <p class="text-sm">Since {{ formattedDateCreated }}</p>
+        </div>
     </div>
-  </div>
-  <div class="flex justify-content-center">
-    <div class="col-6">
-      <div class="field mr-2">
-        <label for="name">Name</label>
-        <input
-          id="name"
-          type="text"
-          class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
-          formControlName="displayName"
-        />
-      </div>
-      <div class="field mr-2">
-        <label for="phoneNumber">Phone Number</label>
-        <input
-          id="phoneNumber"
-          type="text"
-          class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
-          formControlName="phoneNumber"
-          pInputText
-          pKeyFilter="num"
-        />
-      </div>
+    <div class="flex justify-content-center">
+        <div class="col-6">
+            <div class="field mr-2">
+                <label for="name">Name</label>
+                <input
+                    id="name"
+                    type="text"
+                    class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                    formControlName="displayName"
+                />
+            </div>
+            <div class="field mr-2">
+                <label for="phoneNumber">Phone Number</label>
+                <input
+                    id="phoneNumber"
+                    type="text"
+                    class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                    formControlName="phoneNumber"
+                    pInputText
+                    pKeyFilter="num"
+                />
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="field ml-2">
+                <label for="email">Email</label>
+                <input
+                    id="email"
+                    type="text"
+                    class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                    formControlName="email"
+                />
+            </div>
+            <div class="field ml-2">
+                <label for="photoURL">Photo URL</label>
+                <input
+                    id="photoURL"
+                    type="text"
+                    class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                    formControlName="photoURL"
+                />
+            </div>
+        </div>
     </div>
-    <div class="col-6">
-      <div class="field ml-2">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="text"
-          class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
-          formControlName="email"
-        />
-      </div>
-      <div class="field ml-2">
-        <label for="photoURL">Photo URL</label>
-        <input
-          id="photoURL"
-          type="text"
-          class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
-          formControlName="photoURL"
-        />
-      </div>
+    <div class="flex justify-content-center">
+        <p-button
+            styleClass="p-button-raised p-button-primary mb-2 mr-1"
+            type="submit"
+            label="Save"
+            [disabled]="userForm.invalid"
+        >
+            <fa-icon
+                [icon]="faFloppyDisk"
+                [fixedWidth]="true"
+                class="mr-1"
+            ></fa-icon>
+        </p-button>
     </div>
-  </div>
-  <div class="flex justify-content-center">
-    <p-button
-      styleClass="p-button-raised p-button-primary mb-2 mr-1"
-      icon="fa-fw fa-solid fa-floppy-disk"
-      type="submit"
-      label="Save"
-      [disabled]="userForm.invalid"
-    ></p-button>
-  </div>
 </form>
 
 <p-toast position="top-right"></p-toast>
