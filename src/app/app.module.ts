@@ -10,35 +10,35 @@ import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
-import { environment } from '../environments/enviroment';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppLayoutModule } from './layout/app.layout.module';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports: [
-        AppRoutingModule,
-        AppLayoutModule,
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        FormsModule,
-        RouterModule,
-        DropdownModule,
-        provideFirebaseApp(() => initializeApp(environment.firebase)),
-        provideAuth(() => getAuth()),
-        provideFirestore(() => getFirestore()),
-        ButtonModule,
-        FontAwesomeModule
-    ],
-    providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy },
-        { provide: FIREBASE_OPTIONS, useValue: environment.firebase }
-    ],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    AppRoutingModule,
+    AppLayoutModule,
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    RouterModule,
+    DropdownModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    ButtonModule,
+    FontAwesomeModule
+  ],
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: FIREBASE_OPTIONS, useValue: environment.firebase }
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
