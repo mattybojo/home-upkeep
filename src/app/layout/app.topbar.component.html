@@ -1,77 +1,75 @@
 <div class="layout-topbar">
-    <div class="topbar-left">
+  <div class="topbar-left">
+    <a
+      #menubutton
+      tabindex="0"
+      class="menu-button p-trigger"
+      (click)="onMenuButtonClick()"
+    >
+      <i class="pi pi-chevron-left"></i>
+    </a>
+    <img
+      class="horizontal-logo"
+      [routerLink]="['/']"
+      [src]="'assets/layout/images/logo-' + logoColor + '.svg'"
+      alt="diamond-layout"
+    />
+    <span class="topbar-separator"></span>
+    <app-breadcrumb></app-breadcrumb>
+    <img
+      class="mobile-logo"
+      [src]="'assets/layout/images/logo-' + logoColor + '.svg'"
+      alt="diamond-layout"
+    />
+  </div>
+
+  <div class="layout-topbar-menu-section">
+    <app-sidebar></app-sidebar>
+  </div>
+  <div class="layout-mask modal-in"></div>
+
+  <div class="topbar-right">
+    <ul class="topbar-menu">
+      <li class="static sm:relative">
         <a
-            #menubutton
-            tabindex="0"
-            class="menu-button p-trigger"
-            (click)="onMenuButtonClick()"
+          tabindex="0"
+          pStyleClass="@next"
+          enterClass="hidden"
+          enterActiveClass="scalein"
+          leaveToClass="hidden"
+          leaveActiveClass="fadeout"
+          [hideOnOutsideClick]="true"
+          #authMenu
         >
-            <i class="pi pi-chevron-left"></i>
+          <fa-icon
+            size="2xl"
+            [icon]="faCircleUser"
+            [fixedWidth]="true"
+          ></fa-icon>
         </a>
-        <img
-            class="horizontal-logo"
-            [routerLink]="['/']"
-            [src]="'assets/layout/images/logo-' + logoColor + '.svg'"
-            alt="diamond-layout"
-        />
-        <span class="topbar-separator"></span>
-        <app-breadcrumb></app-breadcrumb>
-        <img
-            class="mobile-logo"
-            [src]="'assets/layout/images/logo-' + logoColor + '.svg'"
-            alt="diamond-layout"
-        />
-    </div>
-
-    <div class="layout-topbar-menu-section">
-        <app-sidebar></app-sidebar>
-    </div>
-    <div class="layout-mask modal-in"></div>
-
-    <div class="topbar-right">
-        <ul class="topbar-menu">
-            <li class="static sm:relative">
-                <a
-                    tabindex="0"
-                    pStyleClass="@next"
-                    enterClass="hidden"
-                    enterActiveClass="scalein"
-                    leaveToClass="hidden"
-                    leaveActiveClass="fadeout"
-                    [hideOnOutsideClick]="true"
-                    #authMenu
-                >
-                    <fa-icon
-                        size="2xl"
-                        [icon]="faCircleUser"
-                        [fixedWidth]="true"
-                    ></fa-icon>
-                </a>
-                <ul
-                    class="list-none p-3 m-0 border-round shadow-2 absolute surface-overlay hidden origin-top w-full sm:w-19rem mt-2 right-0 z-5 top-auto"
-                >
-                    <li
-                        *ngFor="let option of authOptions"
-                        (click)="handleAuthOptionClicked(option)"
-                    >
-                        <a
-                            pRipple
-                            class="flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer text-black"
-                        >
-                            <fa-icon
-                                class="mr-3"
-                                [fixedWidth]="true"
-                                [icon]="option.iconName!"
-                            ></fa-icon>
-                            <span class="flex flex-column">
-                                <span class="font-semibold">{{
-                                    option.label
-                                }}</span>
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+        <ul
+          class="list-none p-3 m-0 border-round shadow-2 absolute surface-overlay hidden origin-top w-full sm:w-19rem mt-2 right-0 z-5 top-auto"
+        >
+          <li
+            *ngFor="let option of authOptions"
+            (click)="handleAuthOptionClicked(option)"
+          >
+            <a
+              pRipple
+              class="flex p-2 border-round align-items-center hover:surface-hover transition-colors transition-duration-150 cursor-pointer text-black"
+            >
+              <fa-icon
+                class="mr-3"
+                [fixedWidth]="true"
+                [icon]="option.iconName!"
+              ></fa-icon>
+              <span class="flex flex-column">
+                <span class="font-semibold">{{ option.label }}</span>
+              </span>
+            </a>
+          </li>
         </ul>
-    </div>
+      </li>
+    </ul>
+  </div>
 </div>

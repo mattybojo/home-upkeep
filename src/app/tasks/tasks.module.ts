@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AccordionModule } from 'primeng/accordion';
 import { CalendarModule } from 'primeng/calendar';
+import { CardModule } from 'primeng/card';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
@@ -16,31 +18,31 @@ import { TaskListRowStatusDirective } from './shared/task-list-row-status.direct
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskModalComponent } from './task-modal/task-modal.component';
 import { TasksRoutingModule } from './tasks-routing.module';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-    declarations: [
-        TaskListComponent,
-        TaskListRowStatusDirective,
-        TaskModalComponent,
-        CategoryModalComponent
-    ],
-    imports: [
-        CommonModule,
-        TasksRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        AccordionModule,
-        CalendarModule,
-        ToastModule,
-        InputTextModule,
-        DropdownModule,
-        OverlayPanelModule,
-        DynamicDialogModule,
-        EditorModule,
-        ConfirmPopupModule,
-        TooltipModule,
-        FontAwesomeModule
-    ]
+  declarations: [
+    TaskListComponent,
+    TaskListRowStatusDirective,
+    TaskModalComponent,
+    CategoryModalComponent
+  ],
+  imports: [
+    CommonModule,
+    TasksRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AccordionModule,
+    CalendarModule,
+    ToastModule,
+    InputTextModule,
+    DropdownModule,
+    OverlayPanelModule,
+    DynamicDialogModule,
+    EditorModule,
+    ConfirmPopupModule,
+    TooltipModule,
+    CardModule,
+    FontAwesomeModule,
+  ]
 })
 export class TasksModule { }

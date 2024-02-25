@@ -1,274 +1,254 @@
 <form [formGroup]="maintForm" (ngSubmit)="saveForm()" *ngIf="maintForm" #dd>
-    <div class="grid">
-        <div class="col-12 flex justify-content-end">
-            <p-button
-                styleClass="p-button-raised p-button-success mb-2 mr-1"
-                pTooltip="Add a new category"
-                tooltipPosition="top"
-                (onClick)="addNewCategory()"
-            >
-                <fa-icon [icon]="faCirclePlus" [fixedWidth]="true"></fa-icon>
-            </p-button>
-            <p-button
-                styleClass="p-button-raised p-button-success mb-2 mr-1"
-                pTooltip="Add a new task"
-                tooltipPosition="top"
-                (onClick)="addNewTask()"
-            >
-                <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon
-            ></p-button>
-            <p-button
-                styleClass="p-button-raised p-button-secondary mb-2 mr-1"
-                pTooltip="Show/hide edit and delete buttons"
-                tooltipPosition="top"
-                (onClick)="isViewMode = !isViewMode"
-            >
-                <fa-icon
-                    [icon]="isViewMode ? faPenToSquare : faEye"
-                    [fixedWidth]="true"
-                ></fa-icon>
-            </p-button>
-            <p-button
-                styleClass="p-button-raised p-button-primary mb-2 mr-1"
-                type="submit"
-                pTooltip="Save all tasks"
-                tooltipPosition="top"
-                [disabled]="maintForm.invalid"
-                ><fa-icon [icon]="faFloppyDisk" [fixedWidth]="true"></fa-icon
-            ></p-button>
-            <p-button
-                styleClass="p-button-raised p-button-help mb-2 mr-1"
-                pTooltip="Undo all unsaved edits"
-                tooltipPosition="top"
-                (onClick)="resetForm()"
-                ><fa-icon [icon]="faRotate" [fixedWidth]="true"></fa-icon
-            ></p-button>
-            <p-button
-                styleClass="p-button-raised p-button-warning mb-2 mr-1"
-                pTooltip="Expand all categories"
-                tooltipPosition="top"
-                (onClick)="onAccordionAction('expand')"
-                ><fa-icon [icon]="faFolderPlus" [fixedWidth]="true"></fa-icon
-            ></p-button>
-            <p-button
-                styleClass="p-button-raised p-button-warning mb-2 mr-1"
-                pTooltip="Collapse all categories"
-                tooltipPosition="top"
-                (onClick)="onAccordionAction('collapse')"
-                ><fa-icon [icon]="faFolderMinus" [fixedWidth]="true"></fa-icon
-            ></p-button>
-            <p-dropdown
-                [options]="sortOptions"
-                optionLabel="label"
-                styleClass="mr-1"
-                [(ngModel)]="selectedSort"
-                [ngModelOptions]="{ standalone: true }"
-                (onChange)="onChangeSortOption($event)"
-            >
-                <ng-template pTemplate="selectedItem">
-                    <div class="flex align-items-center gap-2">
-                        <div>Sorted By: {{ selectedSort.label }}</div>
-                    </div>
-                </ng-template>
-                <ng-template let-item pTemplate="item">
-                    <div class="flex align-items-center gap-2">
-                        <fa-icon
-                            [icon]="item.iconName"
-                            [fixedWidth]="true"
-                        ></fa-icon>
-                        <div>{{ item.label }}</div>
-                    </div>
-                </ng-template>
-            </p-dropdown>
-            <div class="inline-flex">
-                <p class="p-input-icon-right filter-input">
-                    <i *ngIf="filterValue.length === 0">
-                        <fa-icon
-                            [icon]="faFilter"
-                            [fixedWidth]="true"
-                        ></fa-icon>
-                    </i>
-                    <i
-                        class="cursor-pointer"
-                        (click)="resetFilter()"
-                        *ngIf="filterValue.length > 0"
-                    >
-                        <fa-icon
-                            [icon]="faCircleXmark"
-                            [fixedWidth]="true"
-                        ></fa-icon>
-                    </i>
-                    <input
-                        type="text"
-                        pInputText
-                        (keyup)="filterMaintItems()"
-                        [(ngModel)]="filterValue"
-                        [ngModelOptions]="{ standalone: true }"
-                    />
-                </p>
-            </div>
-        </div>
-    </div>
-    <p-accordion [multiple]="true">
-        <p-accordionTab
-            [selected]="category.isExpanded!"
-            *ngFor="let category of selectedCategories"
-        >
-            <ng-template pTemplate="header">
-                <ng-container
-                    *ngIf="
-                        selectedCategories === categories &&
-                        !['personal', 'unassigned'].includes(category.category)
-                    "
-                >
-                    <p-button
-                        styleClass="p-button-raised p-button-primary mr-1 ml-1"
-                        (onClick)="onClickEditCategory($event, category)"
-                        size="small"
-                        *ngIf="!isViewMode"
-                    >
-                        <fa-icon
-                            [icon]="faPenToSquare"
-                            [fixedWidth]="true"
-                        ></fa-icon>
-                    </p-button>
-                    <p-button
-                        styleClass="p-button-raised p-button-danger mr-1"
-                        (onClick)="onClickDeleteCategory($event, category.id!)"
-                        size="small"
-                        *ngIf="!isViewMode"
-                        ><fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon
-                    ></p-button>
-                </ng-container>
-                <span class="p-accordion-header-text">{{
-                    category.label
-                }}</span>
+  <div class="grid">
+    <div class="col-12">
+      <p-card>
+        <div class="flex justify-content-center">
+          <!-- Buttons start -->
+          <p-button
+            styleClass="p-button-raised p-button-success mb-2 mr-1"
+            pTooltip="Add a new category"
+            tooltipPosition="top"
+            (onClick)="addNewCategory()"
+          >
+            <fa-icon [icon]="faCirclePlus" [fixedWidth]="true"></fa-icon>
+          </p-button>
+          <p-button
+            styleClass="p-button-raised p-button-success mb-2 mr-1"
+            pTooltip="Add a new task"
+            tooltipPosition="top"
+            (onClick)="addNewTask()"
+          >
+            <fa-icon [icon]="faPlus" [fixedWidth]="true"></fa-icon
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-secondary mb-2 mr-1"
+            pTooltip="Show/hide edit and delete buttons"
+            tooltipPosition="top"
+            (onClick)="isViewMode = !isViewMode"
+          >
+            <fa-icon
+              [icon]="isViewMode ? faPenToSquare : faEye"
+              [fixedWidth]="true"
+            ></fa-icon>
+          </p-button>
+          <p-button
+            styleClass="p-button-raised p-button-primary mb-2 mr-1"
+            type="submit"
+            pTooltip="Save all tasks"
+            tooltipPosition="top"
+            [disabled]="maintForm.invalid"
+            ><fa-icon [icon]="faFloppyDisk" [fixedWidth]="true"></fa-icon
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-help mb-2 mr-1"
+            pTooltip="Undo all unsaved edits"
+            tooltipPosition="top"
+            (onClick)="resetForm()"
+            ><fa-icon [icon]="faRotate" [fixedWidth]="true"></fa-icon
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-warning mb-2 mr-1"
+            pTooltip="Expand all categories"
+            tooltipPosition="top"
+            (onClick)="onAccordionAction('expand')"
+            ><fa-icon [icon]="faFolderPlus" [fixedWidth]="true"></fa-icon
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-warning mb-2 mr-1"
+            pTooltip="Collapse all categories"
+            tooltipPosition="top"
+            (onClick)="onAccordionAction('collapse')"
+            ><fa-icon [icon]="faFolderMinus" [fixedWidth]="true"></fa-icon
+          ></p-button>
+          <p-dropdown
+            class="hidden md:block"
+            [options]="sortOptions"
+            optionLabel="label"
+            styleClass="mr-1"
+            [(ngModel)]="selectedSort"
+            [ngModelOptions]="{ standalone: true }"
+            (onChange)="onChangeSortOption($event)"
+          >
+            <ng-template pTemplate="selectedItem">
+              <div class="flex align-items-center gap-2">
+                <div>Sorted By: {{ selectedSort.label }}</div>
+              </div>
             </ng-template>
-            <ng-container
-                *ngTemplateOutlet="
-                    tasks;
-                    context: { items: category.filteredItems }
-                "
-            ></ng-container>
-        </p-accordionTab>
-    </p-accordion>
-
-    <ng-template #tasks let-items="items">
-        <ng-container *ngIf="items.length">
-            <div class="grid">
-                <div class="col-6 pb-0">
-                    <p class="font-bold">Task</p>
-                </div>
-                <div class="col-2 pb-0">
-                    <p class="font-bold">Last Completed</p>
-                </div>
-                <div class="col-2 pb-0"><p class="font-bold">Due Date</p></div>
-                <div class="col-2 pb-0">
-                    <p class="font-bold">Next due date</p>
-                </div>
-            </div>
-            <hr />
-
-            <div class="grid">
-                <ng-container *ngFor="let item of items">
-                    <div
-                        taskListRowStatus
-                        [doneDate]="maintForm.get(item.control + 'Date')?.value"
-                        [dueDate]="
-                            maintForm.get(item.control + 'DueDate')?.value
-                        "
-                        [isTouched]="
-                            maintForm.get(item.control + 'DueDate')?.touched!
-                        "
-                    >
-                        <div class="col-6 flex align-items-center">
-                            <p-button
-                                styleClass="p-button-raised p-button-primary mr-1"
-                                size="small"
-                                (onClick)="onClickEditItem(item)"
-                                *ngIf="!isViewMode"
-                            >
-                                <fa-icon
-                                    [icon]="faPenToSquare"
-                                    [fixedWidth]="true"
-                                ></fa-icon>
-                            </p-button>
-                            <p-button
-                                styleClass="p-button-raised p-button-danger mr-1"
-                                size="small"
-                                (onClick)="onClickDeleteItem($event, item.id)"
-                                *ngIf="!isViewMode"
-                            >
-                                <fa-icon
-                                    [icon]="faTrash"
-                                    [fixedWidth]="true"
-                                ></fa-icon>
-                            </p-button>
-                            <span class="vertical-align-sub">
-                                {{ item.label }}
-                                <fa-icon
-                                    [icon]="faCircleInfo"
-                                    [fixedWidth]="true"
-                                    (click)="op.toggle($event)"
-                                    *ngIf="item.notes"
-                                ></fa-icon>
-                                <p-overlayPanel #op>
-                                    <p [innerHTML]="item.notes"></p>
-                                </p-overlayPanel>
-                            </span>
-                        </div>
-                        <div class="col-2">
-                            <p-calendar
-                                [appendTo]="dd"
-                                [formControlName]="item.control + 'Date'"
-                                [showIcon]="true"
-                                [showButtonBar]="true"
-                            ></p-calendar>
-                        </div>
-                        <div class="col-2">
-                            <p-calendar
-                                [appendTo]="dd"
-                                [formControlName]="item.control + 'DueDate'"
-                                [showIcon]="true"
-                                [showButtonBar]="true"
-                            ></p-calendar>
-                        </div>
-                        <div class="col-2">
-                            <div class="next-due-date-btns">
-                                <p-button
-                                    label="+Wk"
-                                    styleClass="p-button-raised p-button-primary"
-                                    (click)="
-                                        updateDueDate(item.control, {
-                                            weeks: 1
-                                        })
-                                    "
-                                ></p-button>
-                                <p-button
-                                    label="+Mo"
-                                    styleClass="p-button-raised p-button-primary"
-                                    (click)="
-                                        updateDueDate(item.control, {
-                                            months: 1
-                                        })
-                                    "
-                                ></p-button>
-                                <p-button
-                                    label="+Yr"
-                                    styleClass="p-button-raised p-button-primary"
-                                    (click)="
-                                        updateDueDate(item.control, {
-                                            years: 1
-                                        })
-                                    "
-                                ></p-button>
-                            </div>
-                        </div>
-                    </div>
-                </ng-container>
-            </div>
+            <ng-template let-item pTemplate="item">
+              <div class="flex align-items-center gap-2">
+                <fa-icon [icon]="item.iconName" [fixedWidth]="true"></fa-icon>
+                <div>{{ item.label }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+          <div class="md:inline-flex hidden">
+            <p class="p-input-icon-right filter-input">
+              <i *ngIf="filterValue.length === 0">
+                <fa-icon [icon]="faFilter" [fixedWidth]="true"></fa-icon>
+              </i>
+              <i
+                class="cursor-pointer"
+                (click)="resetFilter()"
+                *ngIf="filterValue.length > 0"
+              >
+                <fa-icon [icon]="faCircleXmark" [fixedWidth]="true"></fa-icon>
+              </i>
+              <input
+                type="text"
+                pInputText
+                (keyup)="filterMaintItems()"
+                [(ngModel)]="filterValue"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </p>
+          </div>
+          <!-- Last item of toolbar -->
+        </div>
+      </p-card>
+    </div>
+  </div>
+  <p-accordion [multiple]="true">
+    <p-accordionTab
+      [selected]="category.isExpanded!"
+      *ngFor="let category of selectedCategories"
+    >
+      <ng-template pTemplate="header">
+        <ng-container
+          *ngIf="
+            selectedCategories === categories &&
+            !['personal', 'unassigned'].includes(category.category)
+          "
+        >
+          <p-button
+            styleClass="p-button-raised p-button-primary mr-1 ml-1"
+            (onClick)="onClickEditCategory($event, category)"
+            size="small"
+            *ngIf="!isViewMode"
+          >
+            <fa-icon [icon]="faPenToSquare" [fixedWidth]="true"></fa-icon>
+          </p-button>
+          <p-button
+            styleClass="p-button-raised p-button-danger mr-1"
+            (onClick)="onClickDeleteCategory($event, category.id!)"
+            size="small"
+            *ngIf="!isViewMode"
+            ><fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon
+          ></p-button>
         </ng-container>
-    </ng-template>
+        <span class="p-accordion-header-text">{{ category.label }}</span>
+      </ng-template>
+      <ng-container
+        *ngTemplateOutlet="tasks; context: { items: category.filteredItems }"
+      ></ng-container>
+    </p-accordionTab>
+  </p-accordion>
+
+  <ng-template #tasks let-items="items">
+    <ng-container *ngIf="items.length">
+      <div class="grid">
+        <div class="col-6 pb-0">
+          <p class="font-bold">Task</p>
+        </div>
+        <div class="col-3 md:col-2 pb-0">
+          <p class="font-bold">Last Completed</p>
+        </div>
+        <div class="col-3 md:col-2 pb-0"><p class="font-bold">Due Date</p></div>
+        <div class="col-2 pb-0 hidden md:block">
+          <p class="font-bold">Next due date</p>
+        </div>
+      </div>
+      <hr />
+
+      <div class="grid">
+        <ng-container *ngFor="let item of items">
+          <div
+            taskListRowStatus
+            [doneDate]="maintForm.get(item.control + 'Date')?.value"
+            [dueDate]="maintForm.get(item.control + 'DueDate')?.value"
+            [isTouched]="maintForm.get(item.control + 'DueDate')?.touched!"
+          >
+            <div class="col-6 flex align-items-center">
+              <p-button
+                styleClass="p-button-raised p-button-primary mr-1"
+                size="small"
+                (onClick)="onClickEditItem(item)"
+                *ngIf="!isViewMode"
+              >
+                <fa-icon [icon]="faPenToSquare" [fixedWidth]="true"></fa-icon>
+              </p-button>
+              <p-button
+                styleClass="p-button-raised p-button-danger mr-1"
+                size="small"
+                (onClick)="onClickDeleteItem($event, item.id)"
+                *ngIf="!isViewMode"
+              >
+                <fa-icon [icon]="faTrash" [fixedWidth]="true"></fa-icon>
+              </p-button>
+              <span class="vertical-align-sub">
+                {{ item.label }}
+                <fa-icon
+                  [icon]="faCircleInfo"
+                  [fixedWidth]="true"
+                  (click)="op.toggle($event)"
+                  *ngIf="item.notes"
+                ></fa-icon>
+                <p-overlayPanel #op>
+                  <p [innerHTML]="item.notes"></p>
+                </p-overlayPanel>
+              </span>
+            </div>
+            <div class="col-3 md:col-2">
+              <p-calendar
+                [appendTo]="dd"
+                [formControlName]="item.control + 'Date'"
+                [showIcon]="true"
+                [showButtonBar]="true"
+              ></p-calendar>
+            </div>
+            <div class="col-3 md:col-2">
+              <p-calendar
+                [appendTo]="dd"
+                [formControlName]="item.control + 'DueDate'"
+                [showIcon]="true"
+                [showButtonBar]="true"
+              ></p-calendar>
+            </div>
+            <div class="md:col-2 hidden md:block">
+              <div class="next-due-date-btns">
+                <p-button
+                  label="+Wk"
+                  styleClass="p-button-raised p-button-primary"
+                  (click)="
+                    updateDueDate(item.control, {
+                      weeks: 1
+                    })
+                  "
+                ></p-button>
+                <p-button
+                  label="+Mo"
+                  styleClass="p-button-raised p-button-primary"
+                  (click)="
+                    updateDueDate(item.control, {
+                      months: 1
+                    })
+                  "
+                ></p-button>
+                <p-button
+                  label="+Yr"
+                  styleClass="p-button-raised p-button-primary"
+                  (click)="
+                    updateDueDate(item.control, {
+                      years: 1
+                    })
+                  "
+                ></p-button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-template>
 </form>
 
 <p-toast position="top-right"></p-toast>
