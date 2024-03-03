@@ -197,13 +197,19 @@
                 </p-overlayPanel>
               </span>
             </div>
-            <div class="col-3 md:col-2">
+            <div class="col-3 md:col-2 flex flex-column lg:flex-row">
               <p-calendar
                 [appendTo]="dd"
                 [formControlName]="item.control + 'Date'"
                 [showIcon]="true"
                 [showButtonBar]="true"
               ></p-calendar>
+              <p-button
+                styleClass="p-button-help px-2 copy-date-btn w-full lg:w-auto justify-content-center"
+                (onClick)="copyDateToDueDate(item)"
+              >
+                <fa-icon [icon]="faAnglesRight" [fixedWidth]="true"></fa-icon>
+              </p-button>
             </div>
             <div class="col-3 md:col-2">
               <p-calendar

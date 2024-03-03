@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { faSquareCheck } from '@fortawesome/free-regular-svg-icons';
-import { faCircleInfo, faCirclePlus, faCircleXmark, faEye, faFilter, faFloppyDisk, faFolderMinus, faFolderPlus, faList, faPenToSquare, faPlus, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faAnglesRight, faCircleInfo, faCirclePlus, faCircleXmark, faEye, faFilter, faFloppyDisk, faFolderMinus, faFolderPlus, faList, faPenToSquare, faPlus, faRotate, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { add, isBefore, isSameDay, set } from 'date-fns';
 import { filter, sortBy } from 'lodash';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -60,6 +60,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
   faCircleXmark = faCircleXmark;
   faTrash = faTrash;
   faCircleInfo = faCircleInfo;
+  faAnglesRight = faAnglesRight;
 
   constructor(private tasksService: TasksService,
     private messageService: MessageService, private dialogService: DialogService,
@@ -122,6 +123,16 @@ export class TaskListComponent implements OnInit, OnDestroy {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to retrieve task data' });
       }
     });
+  }
+
+  copyDateToDueDate(task: Task): void {
+    const foundIndex = this.tasks.findIndex((element: Task) => element.id === task.id);
+
+    if (foundIndex !== -1) {
+      this.tasks[foundIndex].dueDate = this.tasks[foundIndex].lastCompletedDate;
+      this.sortItemsIntoCategories();
+      this.maintForm!.controls[`${task.control}DueDate`]!.setValue(this.maintForm!.controls[`${task.control}Date`].value);
+    }
   }
 
   updateDueDate(controlName: string, duration: Duration) {

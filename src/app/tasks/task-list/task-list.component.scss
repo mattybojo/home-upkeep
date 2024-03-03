@@ -1,12 +1,16 @@
+p-button ::ng-deep .copy-date-btn {
+  height: 35px;
+}
+
 .next-due-date-btns {
-    > *:not(:last-child) {
-        margin-right: 0.25rem;
-    }
-    ::ng-deep button.p-button {
-        margin-bottom: 0.25rem;
-    }
+  > *:not(:last-child) {
+    margin-right: 0.25rem;
+  }
+  ::ng-deep button.p-button {
+    margin-bottom: 0.25rem;
+  }
 }
 
 .filter-input.p-input-icon-right > i {
-    top: 40%;
+  top: 40%;
 }
